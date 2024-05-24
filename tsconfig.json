@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "removeComments": true,
+    "sourceMap": true,
+    "outFile": "app/js/tsc.js",
+    /* Language and Environment */
+    "target": "es2016",
+    /* Modules */
+    "module": "System",
+    "esModuleInterop": true,
+    // "preserveSymlinks": true,              
+    "forceConsistentCasingInFileNames": true,
+    /* Type Checking */
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["app/**/*"],
+  "exclude": ["**/*.spec.ts"]
+}
