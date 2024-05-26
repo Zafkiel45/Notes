@@ -2,7 +2,15 @@
 const textarea = document.querySelector("#content");
 const link = document.querySelector("#link");
 const export_button = document.querySelector("#export_button");
+const bold_button = document.querySelector("#bold_button");
+const italic_button = document.querySelector("#italic_button");
 let content;
+bold_button.addEventListener("click", () => {
+    textarea.value = textarea.value + '**text**';
+});
+italic_button.addEventListener('click', () => {
+    textarea.value = textarea.value + '__text__';
+});
 textarea.addEventListener("change", (event) => {
     const targetElement = event.target;
     content = targetElement.value;

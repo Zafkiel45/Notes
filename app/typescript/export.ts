@@ -3,7 +3,17 @@ const link = document.querySelector("#link") as HTMLAnchorElement;
 const export_button = document.querySelector(
   "#export_button"
 ) as HTMLButtonElement;
+const bold_button = document.querySelector("#bold_button") as HTMLButtonElement;
+const italic_button = document.querySelector("#italic_button") as HTMLButtonElement;
+
 let content: string;
+
+bold_button.addEventListener("click", () => {
+    textarea.value = textarea.value + '**text**';
+})
+italic_button.addEventListener('click', () => {
+    textarea.value = textarea.value + '__text__';
+})
 
 textarea.addEventListener("change", (event: Event) => {
   const targetElement = event.target as HTMLTextAreaElement;
