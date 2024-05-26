@@ -35,6 +35,16 @@ body {
         .container_buttons_nav_header {
             width: 50%;
             height: auto;
+            background-color: rgb(206, 206, 250);
+            border-radius: 1.25rem;
+            padding: 3px 1.25rem;
+        }
+        .container_buttons_nav_header_darkmode {
+            width: 50%;
+            height: auto;
+            background-color: rgb(113, 113, 113);
+            border-radius: 1.25rem;
+            padding: 3px 1.25rem;
         }
 
         .list_buttons_nav_header {
@@ -48,22 +58,24 @@ body {
                 border-radius: 10px;
                 width: fit-content;
                 height: fit-content;
-                padding: 1rem;
-                border: 1px solid #5DA1E0;
+                padding: 0.70rem;
                 background-color: transparent;
                 cursor: pointer;
                 transition: background-color 0.5s ease;
                 &:hover {
-                    background-color: #5DA1E0;
-                }
-                &:hover .svgs {
-                    fill: white;
+                    background-color: rgb(232, 232, 252);
                 }
                 .svgs {
-                    width: 20px;
-                    height: 20px;
-                    fill: #5DA1E0;
+                    width: 25px;
+                    height: 25px;
+                    fill: #141411;
                     transition: background-color 0.5s ease;
+                }
+                .svgs_darkmode {
+                    width: 25px;
+                    height: 25px;
+                    fill: white;
+                    transition: background-color 0.5s ea
                 }
             }
         }
@@ -96,10 +108,10 @@ main {
     align-items: center;
 
     .text_area {
-        background-color: #e3e3e3;
+        background-color: transparent;
         border: none; 
         border-radius: 1.25rem; /* 20px */
-        width: 80%;
+        width: 100%;
         height: 100%;
         padding: 1.25rem;
         color: #242424;
@@ -107,10 +119,10 @@ main {
         font-size: 1.25rem;
     }
     .text_area_darkmode {
-        background-color: #232323;
+        background-color: transparent;
         border: none; 
         border-radius: 1.25rem; /* 20px */
-        width: 80%;
+        width: 100%;
         height: 100%;
         padding: 1.25rem;
         color: #e9e9e9;
