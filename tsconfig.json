@@ -3,14 +3,10 @@
     "noImplicitAny": true,
     "removeComments": true,
     "sourceMap": true,
-    /* Language and Environment */
     "target": "es2016",
-    /* Modules */
     "module": "ES6",
-    "esModuleInterop": true,
-    // "preserveSymlinks": true,              
+    "esModuleInterop": true,            
     "forceConsistentCasingInFileNames": true,
-    /* Type Checking */
     "strict": true,
     "skipLibCheck": true,
     "outDir": "./app/js"
