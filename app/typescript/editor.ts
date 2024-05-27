@@ -46,9 +46,34 @@ function HandleEditorElements(e: KeyboardEvent) {
 }
 
 function DeleteElement(event: KeyboardEvent) {
-    if(event.key === 'Backspace' && (event.target as HTMLDivElement).textContent?.trim() === '') {
-        (event.target as HTMLElement).removeEventListener('keydown', HandleEditorElements);
-        (event.target as HTMLElement).removeEventListener('keydown', DeleteElement);
+  if(event.target && event.target instanceof HTMLElement) {
+    const target = event.target as HTMLDivElement;
+
+    if(event.key === 'Backspace' && target.textContent?.trim() === '') {
+        target.removeEventListener('keydown', HandleEditorElements);
+        target.removeEventListener('keydown', DeleteElement);
+
+        if (target.previousElementSibling && 'focus' in target.previousElementSibling) {
+            (target.previousElementSibling as HTMLDivElement).focus();
+            moveCursorToEndOfLine((target.previousElementSibling as HTMLDivElement))
+        } 
+
         main.removeChild(event.target as HTMLElement);
     }
+  }
+
+}
+
+function moveCursorToEndOfLine(contentEditableElement:any) {
+  const range = document.createRange();
+  const selection = window.getSelection();
+
+  range.selectNodeContents(contentEditableElement);
+
+  range.collapse(false);
+
+  if(selection) {
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
 }
