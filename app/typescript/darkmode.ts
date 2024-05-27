@@ -1,10 +1,14 @@
 const body = document.querySelector('.container_master') as HTMLBodyElement;
-const textarea = document.querySelector('#content') as HTMLTextAreaElement ;
 const navbar = document.querySelector('.container_buttons_nav_header') as HTMLDivElement;
 const svgs = document.querySelectorAll('.svgs');
 
 const svgElements: SVGAElement[] = Array.from(svgs).map(svg => svg as SVGAElement);
 let darkmode: boolean | undefined;
+
+function updateElementAreas() {
+    const textarea = document.querySelectorAll('.text_area, .text_area_darkmode');
+    return Array.from(textarea).map(item => item as HTMLDivElement);
+}
 
 export function checkMode():void {
     console.log('checked')
@@ -26,11 +30,15 @@ export function switchMode() {
     updateElements()
 }
 function updateElements():void {
+    const ElementArea = updateElementAreas();
+
     if(darkmode) {
         body.classList.remove('container_master');
         body.classList.add('container_master_darkmode');
-        textarea.classList.remove('text_area');
-        textarea.classList.add('text_area_darkmode');
+        ElementArea.forEach((item) => {
+            item.classList.remove('text_area');
+            item.classList.add('text_area_darkmode');
+        })
         navbar.classList.remove('container_buttons_nav_header');
         navbar.classList.add('container_buttons_nav_header_darkmode');
         svgElements.forEach((item) => {
@@ -40,13 +48,19 @@ function updateElements():void {
     } else {
         body.classList.remove('container_master_darkmode');
         body.classList.add('container_master');
-        textarea.classList.remove('text_area_darkmode');
-        textarea.classList.add('text_area');
+        ElementArea.forEach((item) => {
+            item.classList.remove('text_area_darkmode');
+            item.classList.add('text_area');
+        })
         navbar.classList.remove('container_buttons_nav_header_darkmode');
         navbar.classList.add('container_buttons_nav_header');
         svgElements.forEach((item) => {
             item.classList.remove('svgs_darkmode');
             item.classList.add('svgs');
+        })
+        ElementArea.forEach((item) => {
+            item.classList.remove('text_area_darkmode');
+            item.classList.add('text_area');
         })
     }
 }

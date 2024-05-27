@@ -1,5 +1,5 @@
-import { checkMode } from "./darkmode";
-import { switchMode } from "./darkmode";
+import { checkMode } from "./darkmode.js";
+import { switchMode } from "./darkmode.js";
 const switchButton = document.querySelector('#switchButton') as HTMLButtonElement;
 
 checkMode();

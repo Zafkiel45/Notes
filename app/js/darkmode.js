@@ -1,9 +1,12 @@
 const body = document.querySelector('.container_master');
-const textarea = document.querySelector('#content');
 const navbar = document.querySelector('.container_buttons_nav_header');
 const svgs = document.querySelectorAll('.svgs');
 const svgElements = Array.from(svgs).map(svg => svg);
 let darkmode;
+function updateElementAreas() {
+    const textarea = document.querySelectorAll('.text_area, .text_area_darkmode');
+    return Array.from(textarea).map(item => item);
+}
 export function checkMode() {
     console.log('checked');
     if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
@@ -24,11 +27,14 @@ export function switchMode() {
     updateElements();
 }
 function updateElements() {
+    const ElementArea = updateElementAreas();
     if (darkmode) {
         body.classList.remove('container_master');
         body.classList.add('container_master_darkmode');
-        textarea.classList.remove('text_area');
-        textarea.classList.add('text_area_darkmode');
+        ElementArea.forEach((item) => {
+            item.classList.remove('text_area');
+            item.classList.add('text_area_darkmode');
+        });
         navbar.classList.remove('container_buttons_nav_header');
         navbar.classList.add('container_buttons_nav_header_darkmode');
         svgElements.forEach((item) => {
@@ -39,13 +45,19 @@ function updateElements() {
     else {
         body.classList.remove('container_master_darkmode');
         body.classList.add('container_master');
-        textarea.classList.remove('text_area_darkmode');
-        textarea.classList.add('text_area');
+        ElementArea.forEach((item) => {
+            item.classList.remove('text_area_darkmode');
+            item.classList.add('text_area');
+        });
         navbar.classList.remove('container_buttons_nav_header_darkmode');
         navbar.classList.add('container_buttons_nav_header');
         svgElements.forEach((item) => {
             item.classList.remove('svgs_darkmode');
             item.classList.add('svgs');
+        });
+        ElementArea.forEach((item) => {
+            item.classList.remove('text_area_darkmode');
+            item.classList.add('text_area');
         });
     }
 }
