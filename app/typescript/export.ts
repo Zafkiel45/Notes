@@ -5,6 +5,8 @@ const export_button = document.querySelector(
 ) as HTMLButtonElement;
 const bold_button = document.querySelector("#bold_button") as HTMLButtonElement;
 const italic_button = document.querySelector("#italic_button") as HTMLButtonElement;
+const list_button = document.querySelector("#list_button") as HTMLButtonElement;
+const code_button = document.querySelector("#code_button") as HTMLButtonElement;
 
 let content: string;
 
@@ -14,7 +16,12 @@ bold_button.addEventListener("click", () => {
 italic_button.addEventListener('click', () => {
     textarea.value = textarea.value + '__text__';
 })
-
+code_button.addEventListener('click', () => {
+  textarea.value = textarea.value + '\n```js\n```'
+})
+list_button.addEventListener('click', () => {
+  textarea.value = textarea.value + '\n-'
+})
 textarea.addEventListener("change", (event: Event) => {
   const targetElement = event.target as HTMLTextAreaElement;
   content = targetElement.value;

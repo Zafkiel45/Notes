@@ -63,7 +63,7 @@ body {
                 cursor: pointer;
                 transition: background-color 0.5s ease;
                 &:hover {
-                    background-color: rgb(232, 232, 252);
+                    background-color: rgb(148, 148, 165);
                 }
                 .svgs {
                     width: 25px;
