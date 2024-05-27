@@ -1,13 +1,12 @@
-"use strict";
 const textarea = document.querySelector("#content");
-const container_main = document.querySelector("#container_main");
 const link = document.querySelector("#link");
 const export_button = document.querySelector("#export_button");
 const bold_button = document.querySelector("#bold_button");
 const italic_button = document.querySelector("#italic_button");
 const list_button = document.querySelector("#list_button");
 const code_button = document.querySelector("#code_button");
-let content;
+import { Formater } from "./convert.js";
+export let content;
 bold_button.addEventListener("click", () => {
     textarea.innerText = textarea.innerText + '**text**';
 });
@@ -56,23 +55,7 @@ function handleBlur(event) {
         div.classList.add('placeholder');
     }
 }
-function Formater() {
-    function conversion(text, pattern, replacement) {
-        return text.replace(pattern, replacement);
-    }
-    function titleConversion(text, pattern, replacement) {
-        return text.replace(pattern, function (match) {
-            const matchResult = match.trim().match(/^#+/);
-            if (matchResult) {
-                const level = matchResult[0].length;
-                return `${replacement.repeat(level)} ${match.trim().substring(level).trim()}`;
-            }
-            return match;
-        });
-    }
-    let markdown = conversion(content, /\*\*(.*?)\*\*/g, "**$1**");
-    markdown = conversion(markdown, /__(.*?)__/g, "__$1__");
-    markdown = titleConversion(markdown, /^#{1,6}\s[a-zA-Z0-9\s\-\_\.,]+\s*$/gm, "#");
+function ExportFile(markdown) {
     let blob = new Blob([markdown], { type: "text/markdown;charset=utf-8" });
     let url = URL.createObjectURL(blob);
     link.href = url;
@@ -82,6 +65,6 @@ function Formater() {
     }, 100);
 }
 export_button.addEventListener("click", () => {
-    Formater();
+    ExportFile(Formater());
 });
 //# sourceMappingURL=export.js.map

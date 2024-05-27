@@ -1,5 +1,4 @@
 const textarea = document.querySelector("#content") as HTMLDivElement; 
-const container_main = document.querySelector("#container_main") as HTMLDivElement;
 const link = document.querySelector("#link") as HTMLAnchorElement;
 const export_button = document.querySelector(
   "#export_button"
@@ -9,7 +8,9 @@ const italic_button = document.querySelector("#italic_button") as HTMLButtonElem
 const list_button = document.querySelector("#list_button") as HTMLButtonElement;
 const code_button = document.querySelector("#code_button") as HTMLButtonElement;
 
-let content: string;
+import { Formater } from "./convert.js";
+
+export let content: string;
 
 // formater buttons
 bold_button.addEventListener("click", () => {
@@ -66,31 +67,10 @@ function handleBlur(event: any) {
   }
 }
 // export 
-function Formater():void {
-  function conversion(text: string, pattern: RegExp, replacement: string):string {
-    return text.replace(pattern, replacement);
-  }
-  function titleConversion(text: string, pattern: RegExp, replacement: string):string {
-    return text.replace(pattern, function (match:string) {
-        const matchResult = match.trim().match(/^#+/);
-        if (matchResult) {
-          const level = matchResult[0].length;  // Conta o número de '#'
-          return `${replacement.repeat(level)} ${match.trim().substring(level).trim()}`;
-        }
-        return match;  // Retorna o match original se não encontrar '#'
-    });
-  }
-
-  let markdown = conversion(content, /\*\*(.*?)\*\*/g, "**$1**");
-  markdown = conversion(markdown, /__(.*?)__/g, "__$1__");
-  markdown = titleConversion(
-    markdown,
-    /^#{1,6}\s[a-zA-Z0-9\s\-\_\.,]+\s*$/gm,
-    "#"
-  );
+function ExportFile(markdown:string):void {
 
   let blob:Blob = new Blob([markdown], { type: "text/markdown;charset=utf-8" });
-  let url = URL.createObjectURL(blob);
+  let url:string = URL.createObjectURL(blob);
 
   link.href = url;
   link.download = "document.md";
@@ -101,5 +81,5 @@ function Formater():void {
 }
 
 export_button.addEventListener("click", () => {
-  Formater();
+  ExportFile(Formater());
 });
