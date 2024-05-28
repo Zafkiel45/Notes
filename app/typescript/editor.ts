@@ -33,11 +33,25 @@ export function HandleElementContent() {
 
 textarea.addEventListener("input", (event: Event) => {
     const targetElement = event.target as HTMLDivElement;
+
+
     content = String(targetElement.textContent);
-  });
+});
 textarea.addEventListener('blur', handleBlur);
 textarea.addEventListener('focus', handleFocus);
 textarea.addEventListener('keydown', HandleEditorElements);
+textarea.addEventListener('input', handleFormaterCharacteres);
+
+function handleFormaterCharacteres(Event: Event) {
+  const regex: RegExp = /^#{1,6}\s[a-zA-Z0-9\s\-\_\.,]+\s*$/gm;
+  const Div = Event.target as HTMLDivElement;
+
+  if(regex.test(String(Div.textContent))) {
+    Div.classList.add('title');
+  } else {
+    Div.classList.remove('title');
+  } 
+}
 function handleFocus(event: any) {
     const div = event.target;
     if (div.textContent.trim() === '') {
@@ -65,6 +79,7 @@ function HandleEditorElements(e: KeyboardEvent) {
     newElement.contentEditable = 'true';
     newElement.addEventListener('keydown', HandleEditorElements);
     newElement.addEventListener('keydown', DeleteElement);
+    newElement.addEventListener('input', handleFormaterCharacteres);
     newElement.innerHTML = '';
 
     (e.target as HTMLDivElement).insertAdjacentElement('afterend', newElement);

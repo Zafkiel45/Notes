@@ -145,6 +145,9 @@ main {
         background-color: transparent;
         padding: 0 1.25rem;
     }
+    .title {
+        font-size:  3rem;
+    }
 }
 @media (max-width: 630px) {
     .container_header {
