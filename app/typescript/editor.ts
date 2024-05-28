@@ -3,6 +3,33 @@ const main = document.querySelector("#container_main") as HTMLDivElement;
 
 export let content: string;
 
+export function HandleElementContent() {
+  try {
+    const Editables = main.querySelectorAll('.editable');
+
+    if(!Editables || !main) {
+      throw Error("Lista de Editables vazia");
+    }
+
+    const EditableArray: HTMLDivElement[] = Array.from(Editables).map(item => item as HTMLDivElement);
+    let NewContent: String = ''
+  
+    for(let c = 0; c < EditableArray.length; c++) {
+      const elementArray = EditableArray[c];
+      const elementString = elementArray.textContent ?? '';
+
+      if(elementArray !== null && elementArray !== undefined) {
+        NewContent = NewContent + elementString + '\n\n';
+      }
+    }
+
+    content = content + '\n\n' + NewContent;
+  } catch(mensage) {
+    console.log(mensage)
+  }
+
+
+}
 
 textarea.addEventListener("input", (event: Event) => {
     const targetElement = event.target as HTMLDivElement;
@@ -30,9 +57,9 @@ function HandleEditorElements(e: KeyboardEvent) {
     const newElement = document.createElement('div');
     
     if(window.matchMedia("(prefers-color-scheme: dark)").matches){
-      newElement.className = 'text_area_darkmode';
+      newElement.className = 'text_area_darkmode editable';
     } else {
-      newElement.className = 'text_area';
+      newElement.className = 'text_area editable';
     }
 
     newElement.contentEditable = 'true';

@@ -1,6 +1,28 @@
 const textarea = document.querySelector("#content");
 const main = document.querySelector("#container_main");
 export let content;
+export function HandleElementContent() {
+    var _a;
+    try {
+        const Editables = main.querySelectorAll('.editable');
+        if (!Editables || !main) {
+            throw Error("Lista de Editables vazia");
+        }
+        const EditableArray = Array.from(Editables).map(item => item);
+        let NewContent = '';
+        for (let c = 0; c < EditableArray.length; c++) {
+            const elementArray = EditableArray[c];
+            const elementString = (_a = elementArray.textContent) !== null && _a !== void 0 ? _a : '';
+            if (elementArray !== null && elementArray !== undefined) {
+                NewContent = NewContent + elementString + '\n\n';
+            }
+        }
+        content = content + '\n\n' + NewContent;
+    }
+    catch (mensage) {
+        console.log(mensage);
+    }
+}
 textarea.addEventListener("input", (event) => {
     const targetElement = event.target;
     content = String(targetElement.textContent);
@@ -25,10 +47,10 @@ function HandleEditorElements(e) {
         e.preventDefault();
         const newElement = document.createElement('div');
         if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-            newElement.className = 'text_area_darkmode';
+            newElement.className = 'text_area_darkmode editable';
         }
         else {
-            newElement.className = 'text_area';
+            newElement.className = 'text_area editable';
         }
         newElement.contentEditable = 'true';
         newElement.addEventListener('keydown', HandleEditorElements);
