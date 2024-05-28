@@ -1,5 +1,6 @@
 const textarea = document.querySelector("#content");
 const main = document.querySelector("#container_main");
+import { handleSelectionElement } from "./export.js";
 export let content;
 export function HandleElementContent() {
     var _a;
@@ -31,6 +32,7 @@ textarea.addEventListener('blur', handleBlur);
 textarea.addEventListener('focus', handleFocus);
 textarea.addEventListener('keydown', HandleEditorElements);
 textarea.addEventListener('input', handleFormaterCharacteres);
+textarea.addEventListener('click', handleSelectionElement);
 function handleFormaterCharacteres(Event) {
     const regex = /^#{1,6}\s[a-zA-Z0-9\s\-\_\.,]+\s*$/gm;
     const Div = Event.target;
@@ -53,23 +55,39 @@ function handleBlur(event) {
         div.classList.add('placeholder');
     }
 }
+function isCursorAtEnd(element) {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0)
+        return false;
+    const range = selection.getRangeAt(0);
+    const endNode = range.endContainer;
+    const endOffset = range.endOffset;
+    if (endNode.nodeType === Node.TEXT_NODE) {
+        return endOffset === (endNode.nodeValue ? endNode.nodeValue.length : 0);
+    }
+    return endOffset === element.childNodes.length;
+}
 function HandleEditorElements(e) {
+    const div = e.target;
     if (e.key === 'Enter') {
-        e.preventDefault();
-        const newElement = document.createElement('div');
-        if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-            newElement.className = 'text_area_darkmode editable';
+        if (isCursorAtEnd(div)) {
+            e.preventDefault();
+            const newElement = document.createElement('div');
+            if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+                newElement.className = 'text_area_darkmode editable';
+            }
+            else {
+                newElement.className = 'text_area editable';
+            }
+            newElement.contentEditable = 'true';
+            newElement.addEventListener('keydown', HandleEditorElements);
+            newElement.addEventListener('keydown', DeleteElement);
+            newElement.addEventListener('input', handleFormaterCharacteres);
+            newElement.addEventListener('click', handleSelectionElement);
+            newElement.innerHTML = '';
+            e.target.insertAdjacentElement('afterend', newElement);
+            newElement.focus();
         }
-        else {
-            newElement.className = 'text_area editable';
-        }
-        newElement.contentEditable = 'true';
-        newElement.addEventListener('keydown', HandleEditorElements);
-        newElement.addEventListener('keydown', DeleteElement);
-        newElement.addEventListener('input', handleFormaterCharacteres);
-        newElement.innerHTML = '';
-        e.target.insertAdjacentElement('afterend', newElement);
-        newElement.focus();
     }
 }
 function DeleteElement(event) {
