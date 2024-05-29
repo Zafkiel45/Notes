@@ -5,20 +5,20 @@ export let content;
 export function HandleElementContent() {
     var _a;
     try {
-        const Editables = main.querySelectorAll('.editable');
+        const Editables = main.querySelectorAll(".editable");
         if (!Editables || !main) {
             throw Error("Lista de Editables vazia");
         }
-        const EditableArray = Array.from(Editables).map(item => item);
-        let NewContent = '';
+        const EditableArray = Array.from(Editables).map((item) => item);
+        let NewContent = "";
         for (let c = 0; c < EditableArray.length; c++) {
             const elementArray = EditableArray[c];
-            const elementString = (_a = elementArray.textContent) !== null && _a !== void 0 ? _a : '';
+            const elementString = (_a = elementArray.textContent) !== null && _a !== void 0 ? _a : "";
             if (elementArray !== null && elementArray !== undefined) {
-                NewContent = NewContent + elementString + '\n\n';
+                NewContent = NewContent + elementString + "\n\n";
             }
         }
-        content = content + '\n\n' + NewContent;
+        content = content + "\n\n" + NewContent;
     }
     catch (mensage) {
         console.log(mensage);
@@ -28,32 +28,32 @@ textarea.addEventListener("input", (event) => {
     const targetElement = event.target;
     content = String(targetElement.textContent);
 });
-textarea.addEventListener('blur', handleBlur);
-textarea.addEventListener('focus', handleFocus);
-textarea.addEventListener('keydown', HandleEditorElements);
-textarea.addEventListener('input', handleFormaterCharacteres);
-textarea.addEventListener('click', handleSelectionElement);
-textarea.addEventListener('paste', handleClearPaste);
+textarea.addEventListener("blur", handleBlur);
+textarea.addEventListener("focus", handleFocus);
+textarea.addEventListener("keydown", HandleEditorElements);
+textarea.addEventListener("input", handleFormaterCharacteres);
+textarea.addEventListener("click", handleSelectionElement);
+textarea.addEventListener("paste", handleClearPaste);
 function handleFormaterCharacteres(Event) {
     const regex = /^#{1,6}\s[a-zA-Z0-9\s\-\_\.,]+\s*$/gm;
     const Div = Event.target;
     if (regex.test(String(Div.textContent))) {
-        Div.classList.add('title');
+        Div.classList.add("title");
     }
     else {
-        Div.classList.remove('title');
+        Div.classList.remove("title");
     }
 }
 function handleFocus(event) {
     const div = event.target;
-    if (div.textContent.trim() === '') {
-        div.classList.remove('placeholder');
+    if (div.textContent.trim() === "") {
+        div.classList.remove("placeholder");
     }
 }
 function handleBlur(event) {
     const div = event.target;
-    if (div.textContent.trim() === '') {
-        div.classList.add('placeholder');
+    if (div.textContent.trim() === "") {
+        div.classList.add("placeholder");
     }
 }
 function isCursorAtEnd(element) {
@@ -71,9 +71,9 @@ function isCursorAtEnd(element) {
 function handleClearPaste(e) {
     var _a;
     e.preventDefault();
-    const pasteContent = (_a = e.clipboardData) === null || _a === void 0 ? void 0 : _a.getData('text/plain');
+    const pasteContent = (_a = e.clipboardData) === null || _a === void 0 ? void 0 : _a.getData("text/plain");
     if (!pasteContent) {
-        console.log('No text content to paste.');
+        console.log("No text content to paste.");
         return;
     }
     const fragment = document.createDocumentFragment();
@@ -92,24 +92,24 @@ function handleClearPaste(e) {
 }
 function HandleEditorElements(e) {
     const div = e.target;
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
         if (isCursorAtEnd(div)) {
             e.preventDefault();
-            const newElement = document.createElement('div');
+            const newElement = document.createElement("div");
             if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-                newElement.className = 'text_area_darkmode editable';
+                newElement.className = "text_area_darkmode editable";
             }
             else {
-                newElement.className = 'text_area editable';
+                newElement.className = "text_area editable";
             }
-            newElement.contentEditable = 'true';
-            newElement.addEventListener('keydown', HandleEditorElements);
-            newElement.addEventListener('keydown', DeleteElement);
-            newElement.addEventListener('input', handleFormaterCharacteres);
-            newElement.addEventListener('click', handleSelectionElement);
-            newElement.addEventListener('paste', handleClearPaste);
-            newElement.innerHTML = '';
-            e.target.insertAdjacentElement('afterend', newElement);
+            newElement.contentEditable = "true";
+            newElement.addEventListener("keydown", HandleEditorElements);
+            newElement.addEventListener("keydown", DeleteElement);
+            newElement.addEventListener("input", handleFormaterCharacteres);
+            newElement.addEventListener("click", handleSelectionElement);
+            newElement.addEventListener("paste", handleClearPaste);
+            newElement.innerHTML = "";
+            e.target.insertAdjacentElement("afterend", newElement);
             newElement.focus();
         }
     }
@@ -118,13 +118,14 @@ function DeleteElement(event) {
     var _a;
     if (event.target && event.target instanceof HTMLElement) {
         const target = event.target;
-        if (event.key === 'Backspace' && ((_a = target.textContent) === null || _a === void 0 ? void 0 : _a.trim()) === '') {
-            target.removeEventListener('keydown', HandleEditorElements);
-            target.removeEventListener('keydown', DeleteElement);
-            target.removeEventListener('input', handleFormaterCharacteres);
-            target.removeEventListener('click', handleSelectionElement);
-            target.removeEventListener('paste', handleClearPaste);
-            if (target.previousElementSibling && 'focus' in target.previousElementSibling) {
+        if (event.key === "Backspace" && ((_a = target.textContent) === null || _a === void 0 ? void 0 : _a.trim()) === "") {
+            target.removeEventListener("keydown", HandleEditorElements);
+            target.removeEventListener("keydown", DeleteElement);
+            target.removeEventListener("input", handleFormaterCharacteres);
+            target.removeEventListener("click", handleSelectionElement);
+            target.removeEventListener("paste", handleClearPaste);
+            if (target.previousElementSibling &&
+                "focus" in target.previousElementSibling) {
                 target.previousElementSibling.focus();
                 moveCursorToEndOfLine(target.previousElementSibling);
             }

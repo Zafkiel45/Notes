@@ -10,7 +10,10 @@ export function Formater() {
             const matchResult = match.trim().match(/^#+/);
             if (matchResult) {
                 const level = matchResult[0].length;
-                return `${replacement.repeat(level)} ${match.trim().substring(level).trim()}`;
+                return `${replacement.repeat(level)} ${match
+                    .trim()
+                    .substring(level)
+                    .trim()}`;
             }
             return match;
         });

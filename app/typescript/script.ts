@@ -1,9 +1,11 @@
 import { checkMode } from "./darkmode.js";
 import { switchMode } from "./darkmode.js";
-const switchButton = document.querySelector('#switchButton') as HTMLButtonElement;
+const switchButton = document.querySelector(
+  "#switchButton"
+) as HTMLButtonElement;
 
 checkMode();
 
-switchButton.addEventListener('click', () => {
-    switchMode();
-})
+switchButton.addEventListener("click", () => {
+  switchMode();
+});
