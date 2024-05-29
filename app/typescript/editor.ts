@@ -42,6 +42,8 @@ textarea.addEventListener('focus', handleFocus);
 textarea.addEventListener('keydown', HandleEditorElements);
 textarea.addEventListener('input', handleFormaterCharacteres);
 textarea.addEventListener('click', handleSelectionElement);
+textarea.addEventListener('paste', handleClearPaste);
+
 
 function handleFormaterCharacteres(Event: Event) {
   const regex: RegExp = /^#{1,6}\s[a-zA-Z0-9\s\-\_\.,]+\s*$/gm;
@@ -82,6 +84,35 @@ function isCursorAtEnd(element: HTMLDivElement) {
   // Verifica se o cursor está no final do elemento
   return endOffset === element.childNodes.length;
 }
+function handleClearPaste(e: ClipboardEvent) {
+  e.preventDefault();
+  const pasteContent = e.clipboardData?.getData('text/plain');
+  
+  // Verifica se há conteúdo para colar
+  if (!pasteContent) {
+    console.log('No text content to paste.');
+    return;
+  }
+  
+  // Cria um DocumentFragment e define seu conteúdo com o texto puro
+  const fragment = document.createDocumentFragment();
+  fragment.appendChild(document.createTextNode(pasteContent));
+  
+  // Encontra o elemento target e insere o fragmento no local atual do cursor
+  const div = e.target as HTMLDivElement;
+  const selection = window.getSelection();
+  if (selection && selection.rangeCount > 0) {
+    const range = selection.getRangeAt(0);
+    range.deleteContents(); // Remove o conteúdo selecionado, se houver
+    range.insertNode(fragment); // Insere o novo conteúdo
+    selection.removeAllRanges(); // Limpa a seleção
+  } else {
+    // Se não houver seleção, simplesmente substitui o conteúdo do div pelo texto puro
+    div.textContent = pasteContent;
+  }
+}
+
+
 function HandleEditorElements(e: KeyboardEvent) {
   const div = e.target as HTMLDivElement;
   if(e.key === 'Enter') {
@@ -100,6 +131,7 @@ function HandleEditorElements(e: KeyboardEvent) {
       newElement.addEventListener('keydown', DeleteElement);
       newElement.addEventListener('input', handleFormaterCharacteres);
       newElement.addEventListener('click', handleSelectionElement);
+      newElement.addEventListener('paste', handleClearPaste);
       newElement.innerHTML = '';
   
       (e.target as HTMLDivElement).insertAdjacentElement('afterend', newElement);
@@ -115,6 +147,9 @@ function DeleteElement(event: KeyboardEvent) {
     if(event.key === 'Backspace' && target.textContent?.trim() === '') {
         target.removeEventListener('keydown', HandleEditorElements);
         target.removeEventListener('keydown', DeleteElement);
+        target.removeEventListener('input', handleFormaterCharacteres);
+        target.removeEventListener('click', handleSelectionElement);
+        target.removeEventListener('paste', handleClearPaste);
 
         if (target.previousElementSibling && 'focus' in target.previousElementSibling) {
             (target.previousElementSibling as HTMLDivElement).focus();

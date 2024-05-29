@@ -33,6 +33,7 @@ textarea.addEventListener('focus', handleFocus);
 textarea.addEventListener('keydown', HandleEditorElements);
 textarea.addEventListener('input', handleFormaterCharacteres);
 textarea.addEventListener('click', handleSelectionElement);
+textarea.addEventListener('paste', handleClearPaste);
 function handleFormaterCharacteres(Event) {
     const regex = /^#{1,6}\s[a-zA-Z0-9\s\-\_\.,]+\s*$/gm;
     const Div = Event.target;
@@ -67,6 +68,28 @@ function isCursorAtEnd(element) {
     }
     return endOffset === element.childNodes.length;
 }
+function handleClearPaste(e) {
+    var _a;
+    e.preventDefault();
+    const pasteContent = (_a = e.clipboardData) === null || _a === void 0 ? void 0 : _a.getData('text/plain');
+    if (!pasteContent) {
+        console.log('No text content to paste.');
+        return;
+    }
+    const fragment = document.createDocumentFragment();
+    fragment.appendChild(document.createTextNode(pasteContent));
+    const div = e.target;
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        range.deleteContents();
+        range.insertNode(fragment);
+        selection.removeAllRanges();
+    }
+    else {
+        div.textContent = pasteContent;
+    }
+}
 function HandleEditorElements(e) {
     const div = e.target;
     if (e.key === 'Enter') {
@@ -84,6 +107,7 @@ function HandleEditorElements(e) {
             newElement.addEventListener('keydown', DeleteElement);
             newElement.addEventListener('input', handleFormaterCharacteres);
             newElement.addEventListener('click', handleSelectionElement);
+            newElement.addEventListener('paste', handleClearPaste);
             newElement.innerHTML = '';
             e.target.insertAdjacentElement('afterend', newElement);
             newElement.focus();
@@ -97,6 +121,9 @@ function DeleteElement(event) {
         if (event.key === 'Backspace' && ((_a = target.textContent) === null || _a === void 0 ? void 0 : _a.trim()) === '') {
             target.removeEventListener('keydown', HandleEditorElements);
             target.removeEventListener('keydown', DeleteElement);
+            target.removeEventListener('input', handleFormaterCharacteres);
+            target.removeEventListener('click', handleSelectionElement);
+            target.removeEventListener('paste', handleClearPaste);
             if (target.previousElementSibling && 'focus' in target.previousElementSibling) {
                 target.previousElementSibling.focus();
                 moveCursorToEndOfLine(target.previousElementSibling);
