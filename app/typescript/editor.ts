@@ -48,7 +48,16 @@ function handleFormaterCharacteres(Event: Event) {
   const Div = Event.target as HTMLDivElement;
 
   if (regex.test(String(Div.textContent))) {
-    Div.classList.add("title");
+    if(String(Div).includes('#')) {
+      Div.classList.add("title");
+      Div.classList.remove("title_2", 'title_3');
+    } else if(String(Div).includes('##')) {
+      Div.classList.add("title_2");
+      Div.classList.remove("title", 'title_3');
+    } else {
+      Div.classList.add("title_3");
+      Div.classList.remove("title", 'title_2');
+    } 
   } else {
     Div.classList.remove("title");
   }
@@ -81,7 +90,6 @@ function isCursorAtEnd(element: HTMLDivElement) {
 
   return endOffset === element.childNodes.length;
 }
-
 function handleClearPaste(e: ClipboardEvent) {
   e.preventDefault();
   const pasteContent = e.clipboardData?.getData("text/plain");

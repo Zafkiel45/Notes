@@ -102,8 +102,8 @@ body {
 }
 main {
     width: 100vw;
-    height: 75vh;
-    margin-top: 1.25rem;
+    min-height: 75vh;
+    padding: 1.25rem 0px;
     display: flex;
     justify-content: center;
 
@@ -117,7 +117,7 @@ main {
         transition: background-color 0.3s ease;
         font-size: 1.25rem;
         border-radius: 5px;
-        &:hover {
+        &:focus {
             background-color: rgba(150, 150, 174, 0.269);
         }
     }
@@ -131,7 +131,8 @@ main {
         transition: background-color 0.3s ease;
         font-size: 1.25rem;
         border-radius: 5px;
-        &:hover {
+
+        &:focus {
             background-color: rgba(85, 85, 101, 0.254);
         }
     }
@@ -147,6 +148,12 @@ main {
     }
     .title {
         font-size:  3rem;
+    }
+    .title_2 {
+        font-size: 2.5rem;
+    }
+    .title_3 {
+        font-size: 2rem;
     }
 }
 @media (max-width: 630px) {
@@ -180,7 +187,17 @@ main {
             }
         }
     }
-
+    main {
+        .title {
+            font-size:  1.8rem;
+        }
+        .title_2 {
+            font-size: 1.4rem;
+        }
+        .title_3 {
+            font-size: 1.3rem;
+        }
+    }
 }
 @media (max-width: 480px) {
     .container_header {
