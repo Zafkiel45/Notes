@@ -67,20 +67,21 @@ function handleBlur(event: any) {
 }
 function isCursorAtEnd(element: HTMLDivElement) {
   const selection = window.getSelection();
+  const nodeList = element.lastChild;
+
   if (!selection || selection.rangeCount === 0) return false;
 
   const range = selection.getRangeAt(0);
   const endNode = range.endContainer;
   const endOffset = range.endOffset;
 
-  // Verifica se o cursor está no final do nó de texto
-  if (endNode.nodeType === Node.TEXT_NODE) {
-    return endOffset === (endNode.nodeValue ? endNode.nodeValue.length : 0);
+  if(endNode.nodeType === endNode.TEXT_NODE) {
+    return endOffset === nodeList?.textContent?.length;
   }
 
-  // Verifica se o cursor está no final do elemento
   return endOffset === element.childNodes.length;
 }
+
 function handleClearPaste(e: ClipboardEvent) {
   e.preventDefault();
   const pasteContent = e.clipboardData?.getData("text/plain");

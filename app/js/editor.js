@@ -57,14 +57,16 @@ function handleBlur(event) {
     }
 }
 function isCursorAtEnd(element) {
+    var _a;
     const selection = window.getSelection();
+    const nodeList = element.lastChild;
     if (!selection || selection.rangeCount === 0)
         return false;
     const range = selection.getRangeAt(0);
     const endNode = range.endContainer;
     const endOffset = range.endOffset;
-    if (endNode.nodeType === Node.TEXT_NODE) {
-        return endOffset === (endNode.nodeValue ? endNode.nodeValue.length : 0);
+    if (endNode.nodeType === endNode.TEXT_NODE) {
+        return endOffset === ((_a = nodeList === null || nodeList === void 0 ? void 0 : nodeList.textContent) === null || _a === void 0 ? void 0 : _a.length);
     }
     return endOffset === element.childNodes.length;
 }
