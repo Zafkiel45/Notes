@@ -149,6 +149,12 @@ main {
     .title {
         font-size:  3rem;
     }
+    .title_2 {
+        font-size:  2.5rem;
+    }
+    .title_3 {
+        font-size:  2rem;
+    }
 }
 @media (max-width: 630px) {
     .container_header {
@@ -228,7 +234,13 @@ main {
     }
     main {
         .title {
+            font-size:  1.8rem;
+        }
+        .title_2 {
             font-size:  1.5rem;
+        }
+        .title_3 {
+            font-size:  1.3rem;
         }
     }
 

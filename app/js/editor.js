@@ -31,17 +31,35 @@ textarea.addEventListener("input", (event) => {
 textarea.addEventListener("blur", handleBlur);
 textarea.addEventListener("focus", handleFocus);
 textarea.addEventListener("keydown", HandleEditorElements);
-textarea.addEventListener("input", handleFormaterCharacteres);
+textarea.addEventListener("input", handleFormatterCharacters);
 textarea.addEventListener("click", handleSelectionElement);
 textarea.addEventListener("paste", handleClearPaste);
-function handleFormaterCharacteres(Event) {
+function handleFormatterCharacters(Event) {
+    var _a;
     const regex = /^#{1,6}\s[a-zA-Z0-9\s\-\_\.,]+\s*$/gm;
-    const Div = Event.target;
-    if (regex.test(String(Div.textContent))) {
-        Div.classList.add("title");
+    const targetElement = Event.target;
+    if (regex.test(String(targetElement.textContent)) && targetElement) {
+        targetElement.classList.remove("title", "title_2", "title_3");
+        const titleLevelMatch = (_a = String(targetElement.textContent)) === null || _a === void 0 ? void 0 : _a.match(/^#+/);
+        if (titleLevelMatch) {
+            const titleLevel = Number(titleLevelMatch[0].length);
+            switch (titleLevel) {
+                case 1:
+                    targetElement.classList.add("title");
+                    break;
+                case 2:
+                    targetElement.classList.add("title_2");
+                    break;
+                case 3:
+                    targetElement.classList.add("title_3");
+                    break;
+                default:
+                    break;
+            }
+        }
     }
     else {
-        Div.classList.remove("title");
+        targetElement.classList.remove("title");
     }
 }
 function handleFocus(event) {
@@ -107,7 +125,7 @@ function HandleEditorElements(e) {
             newElement.contentEditable = "true";
             newElement.addEventListener("keydown", HandleEditorElements);
             newElement.addEventListener("keydown", DeleteElement);
-            newElement.addEventListener("input", handleFormaterCharacteres);
+            newElement.addEventListener("input", handleFormatterCharacters);
             newElement.addEventListener("click", handleSelectionElement);
             newElement.addEventListener("paste", handleClearPaste);
             newElement.innerHTML = "";
@@ -123,7 +141,7 @@ function DeleteElement(event) {
         if (event.key === "Backspace" && ((_a = target.textContent) === null || _a === void 0 ? void 0 : _a.trim()) === "") {
             target.removeEventListener("keydown", HandleEditorElements);
             target.removeEventListener("keydown", DeleteElement);
-            target.removeEventListener("input", handleFormaterCharacteres);
+            target.removeEventListener("input", handleFormatterCharacters);
             target.removeEventListener("click", handleSelectionElement);
             target.removeEventListener("paste", handleClearPaste);
             if (target.previousElementSibling &&

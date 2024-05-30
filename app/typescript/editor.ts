@@ -39,29 +39,43 @@ textarea.addEventListener("input", (event: Event) => {
 textarea.addEventListener("blur", handleBlur);
 textarea.addEventListener("focus", handleFocus);
 textarea.addEventListener("keydown", HandleEditorElements);
-textarea.addEventListener("input", handleFormaterCharacteres);
+textarea.addEventListener("input", handleFormatterCharacters);
 textarea.addEventListener("click", handleSelectionElement);
 textarea.addEventListener("paste", handleClearPaste);
 
-function handleFormaterCharacteres(Event: Event) {
+function handleFormatterCharacters(Event: Event) {
   const regex: RegExp = /^#{1,6}\s[a-zA-Z0-9\s\-\_\.,]+\s*$/gm;
-  const Div = Event.target as HTMLDivElement;
+  const targetElement = Event.target as HTMLDivElement;
 
-  if (regex.test(String(Div.textContent))) {
-    if(String(Div).includes('#')) {
-      Div.classList.add("title");
-      Div.classList.remove("title_2", 'title_3');
-    } else if(String(Div).includes('##')) {
-      Div.classList.add("title_2");
-      Div.classList.remove("title", 'title_3');
-    } else {
-      Div.classList.add("title_3");
-      Div.classList.remove("title", 'title_2');
-    } 
+  if (regex.test(String(targetElement.textContent)) && targetElement) {
+    // Remove todas as classes de título existentes
+    targetElement.classList.remove("title", "title_2", "title_3");
+
+    // Adiciona a classe de título com base no número de hashtags
+    const titleLevelMatch = String(targetElement.textContent)?.match(/^#+/);
+    if (titleLevelMatch) {
+      const titleLevel = Number(titleLevelMatch[0].length);
+      switch (titleLevel) {
+        case 1:
+          targetElement.classList.add("title");
+          break;
+        case 2:
+          targetElement.classList.add("title_2");
+          break;
+        case 3:
+          targetElement.classList.add("title_3");
+          break;
+        default:
+          // Não faça nada para níveis acima de 3
+          break;
+      }
+    }
   } else {
-    Div.classList.remove("title");
+    // Remova a classe de título se o conteúdo não seguir o padrão de título
+    targetElement.classList.remove("title");
   }
 }
+
 function handleFocus(event: any) {
   const div = event.target;
   if (div.textContent.trim() === "") {
@@ -132,7 +146,7 @@ function HandleEditorElements(e: KeyboardEvent) {
       newElement.contentEditable = "true";
       newElement.addEventListener("keydown", HandleEditorElements);
       newElement.addEventListener("keydown", DeleteElement);
-      newElement.addEventListener("input", handleFormaterCharacteres);
+      newElement.addEventListener("input", handleFormatterCharacters);
       newElement.addEventListener("click", handleSelectionElement);
       newElement.addEventListener("paste", handleClearPaste);
       newElement.innerHTML = "";
@@ -152,7 +166,7 @@ function DeleteElement(event: KeyboardEvent) {
     if (event.key === "Backspace" && target.textContent?.trim() === "") {
       target.removeEventListener("keydown", HandleEditorElements);
       target.removeEventListener("keydown", DeleteElement);
-      target.removeEventListener("input", handleFormaterCharacteres);
+      target.removeEventListener("input", handleFormatterCharacters);
       target.removeEventListener("click", handleSelectionElement);
       target.removeEventListener("paste", handleClearPaste);
 
