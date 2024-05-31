@@ -43,7 +43,7 @@ textarea.addEventListener("input", handleFormatterCharacters);
 textarea.addEventListener("click", handleSelectionElement);
 textarea.addEventListener("paste", handleClearPaste);
 
-function handleFormatterCharacters(Event: Event) {
+export function handleFormatterCharacters(Event: Event) {
   const regex: RegExp = /^#{1,6}\s[a-zA-Z0-9\s\-\_\.,]+\s*$/gm;
   const targetElement = Event.target as HTMLDivElement;
 
@@ -75,7 +75,6 @@ function handleFormatterCharacters(Event: Event) {
     targetElement.classList.remove("title");
   }
 }
-
 function handleFocus(event: any) {
   const div = event.target;
   if (div.textContent.trim() === "") {
@@ -88,7 +87,7 @@ function handleBlur(event: any) {
     div.classList.add("placeholder");
   }
 }
-function isCursorAtEnd(element: HTMLDivElement) {
+export function isCursorAtEnd(element: HTMLDivElement) {
   const selection = window.getSelection();
   const nodeList = element.lastChild;
 
@@ -104,7 +103,7 @@ function isCursorAtEnd(element: HTMLDivElement) {
 
   return endOffset === element.childNodes.length;
 }
-function handleClearPaste(e: ClipboardEvent) {
+export function handleClearPaste(e: ClipboardEvent) {
   e.preventDefault();
   const pasteContent = e.clipboardData?.getData("text/plain");
 
@@ -130,8 +129,9 @@ function handleClearPaste(e: ClipboardEvent) {
     div.textContent = pasteContent;
   }
 }
-function HandleEditorElements(e: KeyboardEvent) {
+export function HandleEditorElements(e: KeyboardEvent) {
   const div = e.target as HTMLDivElement;
+
   if (e.key === "Enter") {
     if (isCursorAtEnd(div)) {
       e.preventDefault();
@@ -151,15 +151,29 @@ function HandleEditorElements(e: KeyboardEvent) {
       newElement.addEventListener("paste", handleClearPaste);
       newElement.innerHTML = "";
 
+      const elementsWithContentEditable = document.querySelectorAll<HTMLDivElement>(
+        "div[contenteditable]"
+      );
+      
+      elementsWithContentEditable.forEach((item) => {
+        if(item.classList.contains('selected')) {
+          item.classList.remove('selected');
+        }
+      });
+
+      newElement.classList.add('selected');
+
       (e.target as HTMLDivElement).insertAdjacentElement(
         "afterend",
         newElement
       );
       newElement.focus();
+    } else {
+      console.log('não está no fim da linha!')
     }
   }
 }
-function DeleteElement(event: KeyboardEvent) {
+export function DeleteElement(event: KeyboardEvent) {
   if (event.target && event.target instanceof HTMLElement) {
     const target = event.target as HTMLDivElement;
 
@@ -177,8 +191,10 @@ function DeleteElement(event: KeyboardEvent) {
         (target.previousElementSibling as HTMLDivElement).focus();
         moveCursorToEndOfLine(target.previousElementSibling as HTMLDivElement);
       }
-
-      main.removeChild(event.target as HTMLElement);
+      
+      if(event.target.parentNode ) {
+        target.parentNode?.removeChild(target)
+      }
     }
   }
 }
@@ -195,3 +211,4 @@ function moveCursorToEndOfLine(contentEditableElement: any) {
     selection.addRange(range);
   }
 }
+
