@@ -24,6 +24,9 @@ export function HandleElementContent() {
         console.log(mensage);
     }
 }
+export function ClearContentElement() {
+    content = '';
+}
 textarea.addEventListener("input", (event) => {
     const targetElement = event.target;
     content = String(targetElement.textContent);

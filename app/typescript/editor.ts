@@ -30,6 +30,9 @@ export function HandleElementContent() {
     console.log(mensage);
   }
 }
+export function ClearContentElement() {
+  content = '';
+}
 
 textarea.addEventListener("input", (event: Event) => {
   const targetElement = event.target as HTMLDivElement;
