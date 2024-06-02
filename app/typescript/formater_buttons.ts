@@ -3,14 +3,62 @@ import {
     HandleEditorElements,
     handleClearPaste
 } from "./editor.js";
+import { moveCursorToEndOfLine } from "./editor.js";
 
 const bold_btn = document.querySelector("#bold_button") as HTMLButtonElement;
 const italic_btn = document.querySelector("#italic_button") as HTMLButtonElement;
-const list_btn = document.querySelector("#list_button") as HTMLButtonElement;
 const code_btn = document.querySelector("#code_button") as HTMLButtonElement;
 const table_btn = document.querySelector("#table_button") as HTMLButtonElement;
-const main = document.querySelector('#container_main') as HTMLDivElement;
 
+let elementFocus: HTMLDivElement | null = null;
+
+function handleConvertElementsInDiv() {
+  const elementsWithContentEditable = document.querySelectorAll<HTMLDivElement>(
+    "div[contenteditable]"
+  );
+
+  elementsWithContentEditable.forEach((item) => {
+    if (item.classList.contains("selected")) {
+      elementFocus = item;
+    } else {
+      console.log("nenhum elemento focado");
+    }
+  });
+}
+function HandleItalicFormater() {
+  handleConvertElementsInDiv();
+  
+  if(elementFocus) {
+    elementFocus.innerHTML = elementFocus.innerHTML + '__text__';
+    moveCursorToEndOfLine(elementFocus);
+    elementFocus.focus();
+  }
+}
+function HandleBoldFormater() {
+  handleConvertElementsInDiv();
+  
+  if(elementFocus) {
+    elementFocus.innerHTML = elementFocus.innerHTML + '**text**';
+    moveCursorToEndOfLine(elementFocus);
+    elementFocus.focus();
+  }
+}
+export function HandleBoldFormaterKeyDown(e: KeyboardEvent) {
+  if(e.ctrlKey) {
+    if(e.key.toLocaleLowerCase() === 'b') {
+      HandleBoldFormater();
+    }
+  }
+}
+export function HandleItalicFormaterKeyDown(e: KeyboardEvent) {
+  if(e.ctrlKey) {
+    if(e.key.toLocaleLowerCase() === 'i') {
+      HandleItalicFormater();
+    }
+  }
+}
+bold_btn.addEventListener('click', HandleBoldFormater);
+italic_btn.addEventListener('click', HandleItalicFormater);
 code_btn.addEventListener("click", () => {
     const NewPre = document.createElement('pre');
     const elementsWithContentEditable = document.querySelectorAll<HTMLDivElement>(

@@ -1,6 +1,7 @@
 const textarea = document.querySelector("#content");
 const main = document.querySelector("#container_main");
 import { handleSelectionElement } from "./export.js";
+import { HandleItalicFormaterKeyDown, HandleBoldFormaterKeyDown } from "./formater_buttons.js";
 export let content;
 export function HandleElementContent() {
     var _a;
@@ -37,6 +38,8 @@ textarea.addEventListener("keydown", HandleEditorElements);
 textarea.addEventListener("input", handleFormatterCharacters);
 textarea.addEventListener("click", handleSelectionElement);
 textarea.addEventListener("paste", handleClearPaste);
+textarea.addEventListener('keydown', HandleItalicFormaterKeyDown);
+textarea.addEventListener('keydown', HandleBoldFormaterKeyDown);
 export function handleFormatterCharacters(Event) {
     var _a;
     const regex = /^#{1,6}\s[a-zA-Z0-9\s\-\_\.,]+\s*$/gm;
@@ -131,6 +134,8 @@ export function HandleEditorElements(e) {
             newElement.addEventListener("input", handleFormatterCharacters);
             newElement.addEventListener("click", handleSelectionElement);
             newElement.addEventListener("paste", handleClearPaste);
+            newElement.addEventListener("keydown", HandleItalicFormaterKeyDown);
+            newElement.addEventListener("keydown", HandleBoldFormaterKeyDown);
             newElement.innerHTML = "";
             const elementsWithContentEditable = document.querySelectorAll("div[contenteditable]");
             elementsWithContentEditable.forEach((item) => {
@@ -157,6 +162,8 @@ export function DeleteElement(event) {
             target.removeEventListener("input", handleFormatterCharacters);
             target.removeEventListener("click", handleSelectionElement);
             target.removeEventListener("paste", handleClearPaste);
+            target.removeEventListener("keydown", HandleItalicFormaterKeyDown);
+            target.removeEventListener("keydown", HandleBoldFormaterKeyDown);
             if (target.previousElementSibling &&
                 "focus" in target.previousElementSibling) {
                 target.previousElementSibling.focus();
@@ -168,7 +175,7 @@ export function DeleteElement(event) {
         }
     }
 }
-function moveCursorToEndOfLine(contentEditableElement) {
+export function moveCursorToEndOfLine(contentEditableElement) {
     const range = document.createRange();
     const selection = window.getSelection();
     range.selectNodeContents(contentEditableElement);

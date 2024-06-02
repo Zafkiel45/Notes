@@ -1,10 +1,53 @@
 import { DeleteElement, HandleEditorElements, handleClearPaste } from "./editor.js";
+import { moveCursorToEndOfLine } from "./editor.js";
 const bold_btn = document.querySelector("#bold_button");
 const italic_btn = document.querySelector("#italic_button");
-const list_btn = document.querySelector("#list_button");
 const code_btn = document.querySelector("#code_button");
 const table_btn = document.querySelector("#table_button");
-const main = document.querySelector('#container_main');
+let elementFocus = null;
+function handleConvertElementsInDiv() {
+    const elementsWithContentEditable = document.querySelectorAll("div[contenteditable]");
+    elementsWithContentEditable.forEach((item) => {
+        if (item.classList.contains("selected")) {
+            elementFocus = item;
+        }
+        else {
+            console.log("nenhum elemento focado");
+        }
+    });
+}
+function HandleItalicFormater() {
+    handleConvertElementsInDiv();
+    if (elementFocus) {
+        elementFocus.innerHTML = elementFocus.innerHTML + '__text__';
+        moveCursorToEndOfLine(elementFocus);
+        elementFocus.focus();
+    }
+}
+function HandleBoldFormater() {
+    handleConvertElementsInDiv();
+    if (elementFocus) {
+        elementFocus.innerHTML = elementFocus.innerHTML + '**text**';
+        moveCursorToEndOfLine(elementFocus);
+        elementFocus.focus();
+    }
+}
+export function HandleBoldFormaterKeyDown(e) {
+    if (e.ctrlKey) {
+        if (e.key.toLocaleLowerCase() === 'b') {
+            HandleBoldFormater();
+        }
+    }
+}
+export function HandleItalicFormaterKeyDown(e) {
+    if (e.ctrlKey) {
+        if (e.key.toLocaleLowerCase() === 'i') {
+            HandleItalicFormater();
+        }
+    }
+}
+bold_btn.addEventListener('click', HandleBoldFormater);
+italic_btn.addEventListener('click', HandleItalicFormater);
 code_btn.addEventListener("click", () => {
     const NewPre = document.createElement('pre');
     const elementsWithContentEditable = document.querySelectorAll("div[contenteditable]");

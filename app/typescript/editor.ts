@@ -1,6 +1,7 @@
 const textarea = document.querySelector("#content") as HTMLDivElement;
 const main = document.querySelector("#container_main") as HTMLDivElement;
 import { handleSelectionElement } from "./export.js";
+import { HandleItalicFormaterKeyDown, HandleBoldFormaterKeyDown } from "./formater_buttons.js";
 export let content: string;
 
 export function HandleElementContent() {
@@ -45,6 +46,8 @@ textarea.addEventListener("keydown", HandleEditorElements);
 textarea.addEventListener("input", handleFormatterCharacters);
 textarea.addEventListener("click", handleSelectionElement);
 textarea.addEventListener("paste", handleClearPaste);
+textarea.addEventListener('keydown', HandleItalicFormaterKeyDown);
+textarea.addEventListener('keydown', HandleBoldFormaterKeyDown);
 
 export function handleFormatterCharacters(Event: Event) {
   const regex: RegExp = /^#{1,6}\s[a-zA-Z0-9\s\-\_\.,]+\s*$/gm;
@@ -152,6 +155,8 @@ export function HandleEditorElements(e: KeyboardEvent) {
       newElement.addEventListener("input", handleFormatterCharacters);
       newElement.addEventListener("click", handleSelectionElement);
       newElement.addEventListener("paste", handleClearPaste);
+      newElement.addEventListener("keydown", HandleItalicFormaterKeyDown);
+      newElement.addEventListener("keydown", HandleBoldFormaterKeyDown);
       newElement.innerHTML = "";
 
       const elementsWithContentEditable = document.querySelectorAll<HTMLDivElement>(
@@ -186,6 +191,8 @@ export function DeleteElement(event: KeyboardEvent) {
       target.removeEventListener("input", handleFormatterCharacters);
       target.removeEventListener("click", handleSelectionElement);
       target.removeEventListener("paste", handleClearPaste);
+      target.removeEventListener("keydown", HandleItalicFormaterKeyDown);
+      target.removeEventListener("keydown", HandleBoldFormaterKeyDown);
 
       if (
         target.previousElementSibling &&
@@ -201,7 +208,7 @@ export function DeleteElement(event: KeyboardEvent) {
     }
   }
 }
-function moveCursorToEndOfLine(contentEditableElement: any) {
+export function moveCursorToEndOfLine(contentEditableElement: any) {
   const range = document.createRange();
   const selection = window.getSelection();
 
