@@ -117,15 +117,12 @@ export function handleClearPaste(e: ClipboardEvent) {
     return;
   }
 
-  // Substitui quebras de linha por <br>
   pasteContent = pasteContent.replace(/\n/g, '<br>');
 
   const fragment = document.createDocumentFragment();
-  // Cria um elemento temporário para converter o texto com <br> em nós reais
   const tempDiv = document.createElement('div');
   tempDiv.innerHTML = pasteContent;
 
-  // Adiciona todos os filhos do elemento temporário ao fragmento
   while (tempDiv.firstChild) {
     fragment.appendChild(tempDiv.firstChild);
   }
@@ -154,7 +151,7 @@ export function HandleEditorElements(e: KeyboardEvent) {
       e.preventDefault();
       const newElement = document.createElement("div");
 
-      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      if (localStorage.theme === 'dark') {
         newElement.className = "text_area_darkmode editable";
       } else {
         newElement.className = "text_area editable";

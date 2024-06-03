@@ -131,7 +131,7 @@ export function HandleEditorElements(e) {
         if (isCursorAtEnd(div)) {
             e.preventDefault();
             const newElement = document.createElement("div");
-            if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+            if (localStorage.theme === 'dark') {
                 newElement.className = "text_area_darkmode editable";
             }
             else {

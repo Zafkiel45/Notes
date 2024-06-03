@@ -1,62 +1,59 @@
+"use strict";
 const body = document.querySelector(".container_master");
+const svgElements = document.querySelectorAll(".svgs");
 const navbar = document.querySelector(".container_buttons_nav_header");
-const svgs = document.querySelectorAll(".svgs");
-const svgElements = Array.from(svgs).map((svg) => svg);
-let darkmode;
+const switchButton = document.querySelector("#switchButton");
+const DIV_ELEMENT_DARKMODE = 'text_area_darkmode';
+const SVG_ELEMENT_DARKMODE = 'svgs_darkmode';
+const NAV_ELEMENT_DARKMODE = 'container_buttons_nav_header_darkmode';
+const BODY_ELEMENT_DARKMODE = 'container_master_darkmode';
+const SVG_ELEMENT_LIGHTMODE = 'svgs';
+const DIV_ELEMENT_LIGHTMODE = 'text_area';
+const NAV_ELEMENT_LIGHTMODE = 'container_buttons_nav_header';
+const BODY_ELEMENT_LIGHTMODE = 'container_master';
 function updateElementAreas() {
-    const textarea = document.querySelectorAll(".text_area, .text_area_darkmode");
-    return Array.from(textarea).map((item) => item);
+    return document.querySelectorAll('.text_area, .text_area_darkmode');
 }
-export function checkMode() {
-    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        document.documentElement.classList.remove("light");
-        document.documentElement.classList.add("dark");
-        darkmode = true;
-    }
-    else {
-        document.documentElement.classList.remove("dark");
-        document.documentElement.classList.add("light");
-        darkmode = false;
-    }
+function checkMode() {
+    const preferenceTheme = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    localStorage.theme = preferenceTheme ? 'dark' : 'light';
     updateElements();
 }
-export function switchMode() {
-    darkmode = !darkmode;
-    updateElements();
+function MultplesElements(elements, ClassAdd, ClassRemove) {
+    elements.forEach((item) => {
+        item.classList.remove(ClassRemove);
+        item.classList.add(ClassAdd);
+    });
+}
+function UniqueElements(element, ClassAdd, ClassRemove) {
+    element.classList.remove(ClassRemove);
+    element.classList.add(ClassAdd);
 }
 function updateElements() {
-    const ElementArea = updateElementAreas();
-    if (darkmode) {
-        body.classList.remove("container_master");
-        body.classList.add("container_master_darkmode");
-        ElementArea.forEach((item) => {
-            item.classList.remove("text_area");
-            item.classList.add("text_area_darkmode");
-        });
-        navbar.classList.remove("container_buttons_nav_header");
-        navbar.classList.add("container_buttons_nav_header_darkmode");
-        svgElements.forEach((item) => {
-            item.classList.remove("svgs");
-            item.classList.add("svgs_darkmode");
-        });
+    try {
+        if (!localStorage.theme) {
+            throw new Error('Erro ao obter o "theme" no LocalStorage');
+        }
+        localStorage.theme = localStorage.theme === 'dark' ? 'light' : 'dark';
+        if (localStorage.theme === 'dark') {
+            UniqueElements(body, BODY_ELEMENT_DARKMODE, BODY_ELEMENT_LIGHTMODE);
+            UniqueElements(navbar, NAV_ELEMENT_DARKMODE, NAV_ELEMENT_LIGHTMODE);
+            MultplesElements(updateElementAreas(), DIV_ELEMENT_DARKMODE, DIV_ELEMENT_LIGHTMODE);
+            MultplesElements(svgElements, SVG_ELEMENT_DARKMODE, SVG_ELEMENT_LIGHTMODE);
+        }
+        else {
+            UniqueElements(body, BODY_ELEMENT_LIGHTMODE, BODY_ELEMENT_DARKMODE);
+            UniqueElements(navbar, NAV_ELEMENT_LIGHTMODE, NAV_ELEMENT_DARKMODE);
+            MultplesElements(updateElementAreas(), DIV_ELEMENT_LIGHTMODE, DIV_ELEMENT_DARKMODE);
+            MultplesElements(svgElements, SVG_ELEMENT_LIGHTMODE, SVG_ELEMENT_DARKMODE);
+        }
     }
-    else {
-        body.classList.remove("container_master_darkmode");
-        body.classList.add("container_master");
-        ElementArea.forEach((item) => {
-            item.classList.remove("text_area_darkmode");
-            item.classList.add("text_area");
-        });
-        navbar.classList.remove("container_buttons_nav_header_darkmode");
-        navbar.classList.add("container_buttons_nav_header");
-        svgElements.forEach((item) => {
-            item.classList.remove("svgs_darkmode");
-            item.classList.add("svgs");
-        });
-        ElementArea.forEach((item) => {
-            item.classList.remove("text_area_darkmode");
-            item.classList.add("text_area");
-        });
+    catch (mensage) {
+        window.alert(mensage);
     }
 }
+switchButton.addEventListener("click", () => {
+    updateElements();
+});
+checkMode();
 //# sourceMappingURL=darkmode.js.map
