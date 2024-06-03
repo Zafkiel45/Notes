@@ -109,7 +109,7 @@ export function isCursorAtEnd(element: HTMLDivElement) {
 }
 export function handleClearPaste(e: ClipboardEvent) {
   e.preventDefault();
-  const pasteContent = e.clipboardData?.getData("text/plain");
+  let pasteContent = e.clipboardData?.getData("text/plain");
 
   // Verifica se há conteúdo para colar
   if (!pasteContent) {
@@ -117,10 +117,19 @@ export function handleClearPaste(e: ClipboardEvent) {
     return;
   }
 
-  const fragment = document.createDocumentFragment();
-  fragment.appendChild(document.createTextNode(pasteContent));
+  // Substitui quebras de linha por <br>
+  pasteContent = pasteContent.replace(/\n/g, '<br>');
 
-  
+  const fragment = document.createDocumentFragment();
+  // Cria um elemento temporário para converter o texto com <br> em nós reais
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = pasteContent;
+
+  // Adiciona todos os filhos do elemento temporário ao fragmento
+  while (tempDiv.firstChild) {
+    fragment.appendChild(tempDiv.firstChild);
+  }
+
   const div = e.target as HTMLDivElement;
   const selection = window.getSelection();
 
@@ -128,9 +137,13 @@ export function handleClearPaste(e: ClipboardEvent) {
     const range = selection.getRangeAt(0);
     range.deleteContents(); 
     range.insertNode(fragment); 
-    selection.removeAllRanges(); 
+    selection.removeAllRanges();
+    div.focus();
+    moveCursorToEndOfLine(div); 
   } else {
-    div.textContent = pasteContent;
+    div.innerHTML = pasteContent; 
+    div.focus();
+    moveCursorToEndOfLine(div);
   }
 }
 export function HandleEditorElements(e: KeyboardEvent) {

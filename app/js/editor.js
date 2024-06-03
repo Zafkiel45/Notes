@@ -97,13 +97,18 @@ export function isCursorAtEnd(element) {
 export function handleClearPaste(e) {
     var _a;
     e.preventDefault();
-    const pasteContent = (_a = e.clipboardData) === null || _a === void 0 ? void 0 : _a.getData("text/plain");
+    let pasteContent = (_a = e.clipboardData) === null || _a === void 0 ? void 0 : _a.getData("text/plain");
     if (!pasteContent) {
         console.log("No text content to paste.");
         return;
     }
+    pasteContent = pasteContent.replace(/\n/g, '<br>');
     const fragment = document.createDocumentFragment();
-    fragment.appendChild(document.createTextNode(pasteContent));
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = pasteContent;
+    while (tempDiv.firstChild) {
+        fragment.appendChild(tempDiv.firstChild);
+    }
     const div = e.target;
     const selection = window.getSelection();
     if (selection && selection.rangeCount > 0) {
@@ -111,9 +116,13 @@ export function handleClearPaste(e) {
         range.deleteContents();
         range.insertNode(fragment);
         selection.removeAllRanges();
+        div.focus();
+        moveCursorToEndOfLine(div);
     }
     else {
-        div.textContent = pasteContent;
+        div.innerHTML = pasteContent;
+        div.focus();
+        moveCursorToEndOfLine(div);
     }
 }
 export function HandleEditorElements(e) {
