@@ -1,32 +1,28 @@
-const textarea = document.querySelector("#content") as HTMLDivElement;
-const main = document.querySelector("#container_main") as HTMLDivElement;
 import { handleSelectionElement } from "./export.js";
 import { HandleItalicFormaterKeyDown, HandleBoldFormaterKeyDown } from "./formater_buttons.js";
+
+const textarea = document.querySelector("#content") as HTMLDivElement;
+const main = document.querySelector("#container_main") as HTMLDivElement;
+
 export let content: string;
 
 export function HandleElementContent() {
   try {
-    const Editables = main.querySelectorAll(".editable");
+    const Editables = main.querySelectorAll<HTMLDivElement>(".editable");
 
     if (!Editables || !main) {
       throw Error("Lista de Editables vazia");
     }
 
-    const EditableArray: HTMLDivElement[] = Array.from(Editables).map(
-      (item) => item as HTMLDivElement
-    );
     let NewContent: String = "";
 
-    for (let c = 0; c < EditableArray.length; c++) {
-      const elementArray = EditableArray[c];
-      const elementString = elementArray.textContent ?? "";
-
-      if (elementArray !== null && elementArray !== undefined) {
-        NewContent = NewContent + elementString + "\n\n";
-      }
-    }
-
+    Editables.forEach(editable => {
+      const elementString = editable.textContent ?? "";
+      NewContent += elementString + "\n\n";
+    });
+    
     content = content + "\n\n" + NewContent;
+
   } catch (mensage) {
     console.log(mensage);
   }
@@ -36,27 +32,27 @@ export function ClearContentElement() {
 }
 
 textarea.addEventListener("input", (event: Event) => {
-  const targetElement = event.target as HTMLDivElement;
-
-  content = String(targetElement.textContent);
+  content = String((event.target as HTMLDivElement).textContent) ?? '';
 });
+
 textarea.addEventListener("blur", handleBlur);
 textarea.addEventListener("focus", handleFocus);
 textarea.addEventListener("keydown", HandleEditorElements);
+textarea.addEventListener('keydown', HandleItalicFormaterKeyDown);
+textarea.addEventListener('keydown', HandleBoldFormaterKeyDown);
 textarea.addEventListener("input", handleFormatterCharacters);
 textarea.addEventListener("click", handleSelectionElement);
 textarea.addEventListener("paste", handleClearPaste);
-textarea.addEventListener('keydown', HandleItalicFormaterKeyDown);
-textarea.addEventListener('keydown', HandleBoldFormaterKeyDown);
 
 export function handleFormatterCharacters(Event: Event) {
   const regex: RegExp = /^#{1,6}\s[a-zA-Z0-9\s\-\_\.,]+\s*$/gm;
   const targetElement = Event.target as HTMLDivElement;
+  const targetElementTextoContent: string = String(targetElement.textContent);
 
-  if (regex.test(String(targetElement.textContent)) && targetElement) {
+  if (regex.test(targetElementTextoContent) && targetElement) {
     targetElement.classList.remove("title", "title_2", "title_3");
 
-    const titleLevelMatch = String(targetElement.textContent)?.match(/^#+/);
+    const titleLevelMatch = targetElementTextoContent.match(/^#+/);
     if (titleLevelMatch) {
       const titleLevel = Number(titleLevelMatch[0].length);
       switch (titleLevel) {
@@ -70,24 +66,24 @@ export function handleFormatterCharacters(Event: Event) {
           targetElement.classList.add("title_3");
           break;
         default:
-          // Não faça nada para níveis acima de 3
           break;
       }
     }
   } else {
-    // Remova a classe de título se o conteúdo não seguir o padrão de título
-    targetElement.classList.remove("title");
+    targetElement.classList.remove("title", "title_2", "title_3");
   }
 }
-function handleFocus(event: any) {
-  const div = event.target;
-  if (div.textContent.trim() === "") {
+function handleFocus(event: FocusEvent) {
+  const div = event.target as HTMLDivElement;
+  const div_textContent = String(div.textContent);
+  if (div_textContent.trim() === "") {
     div.classList.remove("placeholder");
   }
 }
-function handleBlur(event: any) {
-  const div = event.target;
-  if (div.textContent.trim() === "") {
+function handleBlur(event: FocusEvent) {
+  const div = event.target as HTMLDivElement;
+  const div_textContent = String(div.textContent);
+  if (div_textContent.trim() === "") {
     div.classList.add("placeholder");
   }
 }
@@ -111,12 +107,11 @@ export function handleClearPaste(e: ClipboardEvent) {
   e.preventDefault();
   let pasteContent = e.clipboardData?.getData("text/plain");
 
-  // Verifica se há conteúdo para colar
   if (!pasteContent) {
     console.log("No text content to paste.");
     return;
   }
-
+  
   pasteContent = pasteContent.replace(/\n/g, '<br>');
 
   const fragment = document.createDocumentFragment();
@@ -143,19 +138,27 @@ export function handleClearPaste(e: ClipboardEvent) {
     moveCursorToEndOfLine(div);
   }
 }
+export function handleCurrentSelectionElement():void {
+  const elementsWithContentEditable = document.querySelectorAll<HTMLDivElement>(
+    "div[contenteditable]"
+  );
+  
+  elementsWithContentEditable.forEach((item) => {
+    if(item.classList.contains('selected')) {
+      item.classList.remove('selected');
+    }
+  });
+}
 export function HandleEditorElements(e: KeyboardEvent) {
   const div = e.target as HTMLDivElement;
 
-  if (e.key === "Enter") {
-    if (isCursorAtEnd(div)) {
+  if (e.key === "Enter" && isCursorAtEnd(div)) {
       e.preventDefault();
-      const newElement = document.createElement("div");
 
-      if (localStorage.theme === 'dark') {
-        newElement.className = "text_area_darkmode editable";
-      } else {
-        newElement.className = "text_area editable";
-      }
+      const newElement = document.createElement("div");
+      const currentTheme = localStorage.theme;
+      newElement.className = currentTheme === 'dark' ? 
+      'text_area_darkmode editable':'text_area editable';
 
       newElement.contentEditable = "true";
       newElement.addEventListener("keydown", HandleEditorElements);
@@ -167,40 +170,21 @@ export function HandleEditorElements(e: KeyboardEvent) {
       newElement.addEventListener("keydown", HandleBoldFormaterKeyDown);
       newElement.innerHTML = "";
 
-      const elementsWithContentEditable = document.querySelectorAll<HTMLDivElement>(
-        "div[contenteditable]"
-      );
-      
-      elementsWithContentEditable.forEach((item) => {
-        if(item.classList.contains('selected')) {
-          item.classList.remove('selected');
-        }
-      });
-
+      handleCurrentSelectionElement();
       newElement.classList.add('selected');
 
-      (e.target as HTMLDivElement).insertAdjacentElement(
-        "afterend",
-        newElement
-      );
+      div.insertAdjacentElement("afterend",newElement);
       newElement.focus();
     } else {
       console.log('não está no fim da linha!')
     }
-  }
 }
 export function DeleteElement(event: KeyboardEvent) {
   if (event.target && event.target instanceof HTMLElement) {
     const target = event.target as HTMLDivElement;
 
     if (event.key === "Backspace" && target.textContent?.trim() === "") {
-      target.removeEventListener("keydown", HandleEditorElements);
-      target.removeEventListener("keydown", DeleteElement);
-      target.removeEventListener("input", handleFormatterCharacters);
-      target.removeEventListener("click", handleSelectionElement);
-      target.removeEventListener("paste", handleClearPaste);
-      target.removeEventListener("keydown", HandleItalicFormaterKeyDown);
-      target.removeEventListener("keydown", HandleBoldFormaterKeyDown);
+      removeEventListenersFromEditable(target);
 
       if (
         target.previousElementSibling &&
@@ -215,6 +199,15 @@ export function DeleteElement(event: KeyboardEvent) {
       }
     }
   }
+}
+function removeEventListenersFromEditable(element: HTMLDivElement) {
+  element.removeEventListener("keydown", HandleEditorElements);
+  element.removeEventListener("keydown", DeleteElement);
+  element.removeEventListener("input", handleFormatterCharacters);
+  element.removeEventListener("click", handleSelectionElement);
+  element.removeEventListener("paste", handleClearPaste);
+  element.removeEventListener("keydown", HandleItalicFormaterKeyDown);
+  element.removeEventListener("keydown", HandleBoldFormaterKeyDown);
 }
 export function moveCursorToEndOfLine(contentEditableElement: any) {
   const range = document.createRange();
