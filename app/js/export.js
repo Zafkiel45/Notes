@@ -1,17 +1,7 @@
 const link = document.querySelector("#link");
 const export_button = document.querySelector("#export_button");
-import { Formater } from "./convert.js";
 import { ClearContentElement } from "./editor.js";
-export function handleSelectionElement(e) {
-    const elementsWithContentEditable = document.querySelectorAll("div[contenteditable]");
-    const div = e.target;
-    elementsWithContentEditable.forEach((item) => {
-        if (item.classList.contains("selected")) {
-            item.classList.remove("selected");
-        }
-    });
-    div.classList.add("selected");
-}
+import { HandleElementContent } from "./editor.js";
 function ExportFile(markdown) {
     let blob = new Blob([markdown], {
         type: "text/markdown;charset=utf-8",
@@ -25,6 +15,6 @@ function ExportFile(markdown) {
     }, 100);
 }
 export_button.addEventListener("click", () => {
-    ExportFile(Formater());
+    ExportFile(String(HandleElementContent()));
 });
 //# sourceMappingURL=export.js.map

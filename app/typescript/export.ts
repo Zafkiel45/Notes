@@ -3,23 +3,8 @@ const export_button = document.querySelector(
   "#export_button"
 ) as HTMLButtonElement;
 
-import { Formater } from "./convert.js";
 import { ClearContentElement } from "./editor.js";
-
-export function handleSelectionElement(e: Event) {
-  const elementsWithContentEditable = document.querySelectorAll<HTMLDivElement>(
-    "div[contenteditable]"
-  );
-  const div = e.target as HTMLDivElement;
-
-  elementsWithContentEditable.forEach((item) => {
-    if (item.classList.contains("selected")) {
-      item.classList.remove("selected");
-    }
-  });
-
-  div.classList.add("selected");
-}
+import { HandleElementContent } from "./editor.js";
 
 // export
 function ExportFile(markdown: string): void {
@@ -30,12 +15,13 @@ function ExportFile(markdown: string): void {
 
   link.href = url;
   link.download = "document.md";
-  ClearContentElement()
+  ClearContentElement();
+
   setTimeout(() => {
     window.URL.revokeObjectURL(url);
   }, 100);
 }
 
 export_button.addEventListener("click", () => {
-  ExportFile(Formater());
+  ExportFile(String(HandleElementContent()))
 });

@@ -1,4 +1,3 @@
-import { handleSelectionElement } from "./export.js";
 import { HandleItalicFormaterKeyDown, HandleBoldFormaterKeyDown } from "./formater_buttons.js";
 
 const textarea = document.querySelector("#content") as HTMLDivElement;
@@ -21,7 +20,7 @@ export function HandleElementContent() {
       NewContent += elementString + "\n\n";
     });
     
-    content = content + "\n\n" + NewContent;
+    return content = String(content + "\n\n" + NewContent);
 
   } catch (mensage) {
     console.log(mensage);
@@ -30,11 +29,9 @@ export function HandleElementContent() {
 export function ClearContentElement() {
   content = '';
 }
-
 textarea.addEventListener("input", (event: Event) => {
   content = String((event.target as HTMLDivElement).textContent) ?? '';
 });
-
 textarea.addEventListener("blur", handleBlur);
 textarea.addEventListener("focus", handleFocus);
 textarea.addEventListener("keydown", HandleEditorElements);
@@ -148,6 +145,20 @@ export function handleCurrentSelectionElement():void {
       item.classList.remove('selected');
     }
   });
+}
+function handleSelectionElement(e: Event) {
+  const elementsWithContentEditable = document.querySelectorAll<HTMLDivElement>(
+    "div[contenteditable]"
+  );
+  const div = e.target as HTMLDivElement;
+
+  elementsWithContentEditable.forEach((item) => {
+    if (item.classList.contains("selected")) {
+      item.classList.remove("selected");
+    }
+  });
+
+  div.classList.add("selected");
 }
 export function HandleEditorElements(e: KeyboardEvent) {
   const div = e.target as HTMLDivElement;

@@ -1,4 +1,3 @@
-import { handleSelectionElement } from "./export.js";
 import { HandleItalicFormaterKeyDown, HandleBoldFormaterKeyDown } from "./formater_buttons.js";
 const textarea = document.querySelector("#content");
 const main = document.querySelector("#container_main");
@@ -15,7 +14,7 @@ export function HandleElementContent() {
             const elementString = (_a = editable.textContent) !== null && _a !== void 0 ? _a : "";
             NewContent += elementString + "\n\n";
         });
-        content = content + "\n\n" + NewContent;
+        return content = String(content + "\n\n" + NewContent);
     }
     catch (mensage) {
         console.log(mensage);
@@ -130,6 +129,16 @@ export function handleCurrentSelectionElement() {
             item.classList.remove('selected');
         }
     });
+}
+function handleSelectionElement(e) {
+    const elementsWithContentEditable = document.querySelectorAll("div[contenteditable]");
+    const div = e.target;
+    elementsWithContentEditable.forEach((item) => {
+        if (item.classList.contains("selected")) {
+            item.classList.remove("selected");
+        }
+    });
+    div.classList.add("selected");
 }
 export function HandleEditorElements(e) {
     const div = e.target;
