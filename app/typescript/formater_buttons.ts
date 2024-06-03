@@ -65,7 +65,7 @@ code_btn.addEventListener("click", () => {
       "div[contenteditable]"
     );
 
-    let TargetElement: Element;
+    let TargetElement: HTMLDivElement;
   
     NewPre.className = 'code_block editable';
     NewPre.contentEditable = 'true';
@@ -78,10 +78,7 @@ code_btn.addEventListener("click", () => {
     elementsWithContentEditable.forEach((item) => {
       if(item.classList.contains('selected')) {
         TargetElement = item;
-        (TargetElement as HTMLDivElement).insertAdjacentElement(
-          "afterend",
-          NewPre
-        );
+        TargetElement.insertAdjacentElement("afterend",NewPre);
         NewPre.focus();
       }
     })
