@@ -54,10 +54,8 @@ export function handleFormatterCharacters(Event: Event) {
   const targetElement = Event.target as HTMLDivElement;
 
   if (regex.test(String(targetElement.textContent)) && targetElement) {
-    // Remove todas as classes de título existentes
     targetElement.classList.remove("title", "title_2", "title_3");
 
-    // Adiciona a classe de título com base no número de hashtags
     const titleLevelMatch = String(targetElement.textContent)?.match(/^#+/);
     if (titleLevelMatch) {
       const titleLevel = Number(titleLevelMatch[0].length);

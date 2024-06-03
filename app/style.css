@@ -22,10 +22,13 @@ body {
     color: #232323;
 }
 .container_header {
+    position: fixed;
     width: 100vw;
     height: auto;
     padding: 20px 16px;
     border-bottom: 1px solid lightgray;
+    background-color: rgba(41, 40, 56, 0.742);
+    background-blend-mode: overlay;
 
     .container_nav_header {
         display: flex;
@@ -141,10 +144,11 @@ main {
         color: gray;
     }
     .container_editor {
-        width: 100%;
+        width: 80%;
         height: auto;
         background-color: transparent;
         padding: 0 1.25rem;
+        margin-top: 7rem;
     }
     .title {
         font-size:  3rem;
