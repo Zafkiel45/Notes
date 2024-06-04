@@ -1,6 +1,6 @@
 const link = document.querySelector("#link") as HTMLAnchorElement;
 const export_button = document.querySelector(
-  "#export_button"
+  "#export_button",
 ) as HTMLButtonElement;
 
 import { ClearContentElement } from "./editor.js";
@@ -23,5 +23,5 @@ function ExportFile(markdown: string): void {
 }
 
 export_button.addEventListener("click", () => {
-  ExportFile(String(HandleElementContent()))
+  ExportFile(String(HandleElementContent()));
 });
