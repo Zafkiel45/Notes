@@ -1,77 +1,6 @@
-import { HandleItalicFormaterKeyDown, HandleBoldFormaterKeyDown } from "./formater_buttons.js";
-const textarea = document.querySelector("#content");
-const main = document.querySelector("#container_main");
 export let content;
-export function HandleElementContent() {
-  try {
-    const Editables = main.querySelectorAll(".editable");
-    if (!Editables || !main) {
-      throw Error("Lista de Editables vazia");
-    }
-    let NewContent = "";
-    Editables.forEach(editable => {
-      const elementString = editable.textContent ?? "";
-      NewContent += elementString + "\n\n";
-    });
-    return content = String(content + "\n\n" + NewContent);
-  } catch (mensage) {
-    console.log(mensage);
-  }
-}
 export function ClearContentElement() {
   content = "";
-}
-textarea.addEventListener("input", event => {
-  content = String(event.target.textContent) ?? "";
-});
-textarea.addEventListener("blur", handleBlur);
-textarea.addEventListener("focus", handleFocus);
-textarea.addEventListener("keydown", HandleEditorElements);
-textarea.addEventListener("keydown", HandleItalicFormaterKeyDown);
-textarea.addEventListener("keydown", HandleBoldFormaterKeyDown);
-textarea.addEventListener("input", handleFormatterCharacters);
-textarea.addEventListener("click", handleSelectionElement);
-textarea.addEventListener("paste", handleClearPaste);
-export function handleFormatterCharacters(Event) {
-  const regex = /^#{1,6}\s[a-zA-Z0-9\s\-\_\.,]+\s*$/gm;
-  const targetElement = Event.target;
-  const targetElementTextoContent = String(targetElement.textContent);
-  if (regex.test(targetElementTextoContent) && targetElement) {
-    targetElement.classList.remove("title", "title_2", "title_3");
-    const titleLevelMatch = targetElementTextoContent.match(/^#+/);
-    if (titleLevelMatch) {
-      const titleLevel = Number(titleLevelMatch[0].length);
-      switch (titleLevel) {
-        case 1:
-          targetElement.classList.add("title");
-          break;
-        case 2:
-          targetElement.classList.add("title_2");
-          break;
-        case 3:
-          targetElement.classList.add("title_3");
-          break;
-        default:
-          break;
-      }
-    }
-  } else {
-    targetElement.classList.remove("title", "title_2", "title_3");
-  }
-}
-function handleFocus(event) {
-  const div = event.target;
-  const div_textContent = String(div.textContent);
-  if (div_textContent.trim() === "") {
-    div.classList.remove("placeholder");
-  }
-}
-function handleBlur(event) {
-  const div = event.target;
-  const div_textContent = String(div.textContent);
-  if (div_textContent.trim() === "") {
-    div.classList.add("placeholder");
-  }
 }
 export function isCursorAtEnd(element) {
   const selection = window.getSelection();
@@ -85,7 +14,26 @@ export function isCursorAtEnd(element) {
   }
   return endOffset === element.childNodes.length;
 }
-export function handleClearPaste(e) {
+export function HandleContentInEditor() {
+  const Contents = document.querySelectorAll('.contentOfLine');
+  let NewContent = null;
+  Contents.forEach(item => {
+    NewContent += String(item.textContent);
+  });
+  const WhiteSpacesFormated = String(NewContent).replace(/\n/g, '<br>');
+  return content = String(WhiteSpacesFormated);
+}
+function moveCursorToEndOfLine(contentEditableElement) {
+  const range = document.createRange();
+  const selection = window.getSelection();
+  range.selectNodeContents(contentEditableElement);
+  range.collapse(false);
+  if (selection) {
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+}
+function handleClearPaste(e) {
   e.preventDefault();
   let pasteContent = e.clipboardData?.getData("text/plain");
   if (!pasteContent) {
@@ -108,85 +56,86 @@ export function handleClearPaste(e) {
     selection.removeAllRanges();
     div.focus();
     moveCursorToEndOfLine(div);
+    content = String(e.target.textContent);
   } else {
     div.innerHTML = pasteContent;
     div.focus();
     moveCursorToEndOfLine(div);
+    content = String(e.target.textContent);
   }
 }
-export function handleCurrentSelectionElement() {
-  const elementsWithContentEditable = document.querySelectorAll("div[contenteditable]");
-  elementsWithContentEditable.forEach(item => {
-    if (item.classList.contains("selected")) {
-      item.classList.remove("selected");
-    }
-  });
-}
-function handleSelectionElement(e) {
-  const elementsWithContentEditable = document.querySelectorAll("div[contenteditable]");
-  const div = e.target;
-  elementsWithContentEditable.forEach(item => {
-    if (item.classList.contains("selected")) {
-      item.classList.remove("selected");
-    }
-  });
-  div.classList.add("selected");
-}
-export function HandleEditorElements(e) {
-  const div = e.target;
-  if (e.key === "Enter" && isCursorAtEnd(div)) {
-    e.preventDefault();
-    const newElement = document.createElement("div");
-    const currentTheme = localStorage.theme;
-    newElement.className = currentTheme === "dark" ? "text_area_darkmode editable" : "text_area editable";
-    newElement.contentEditable = "true";
-    newElement.addEventListener("keydown", HandleEditorElements);
-    newElement.addEventListener("keydown", DeleteElement);
-    newElement.addEventListener("input", handleFormatterCharacters);
-    newElement.addEventListener("click", handleSelectionElement);
-    newElement.addEventListener("paste", handleClearPaste);
-    newElement.addEventListener("keydown", HandleItalicFormaterKeyDown);
-    newElement.addEventListener("keydown", HandleBoldFormaterKeyDown);
-    newElement.innerHTML = "";
-    handleCurrentSelectionElement();
-    newElement.classList.add("selected");
-    div.insertAdjacentElement("afterend", newElement);
-    newElement.focus();
-  } else {
-    console.log("não está no fim da linha!");
-  }
-}
-export function DeleteElement(event) {
-  if (event.target && event.target instanceof HTMLElement) {
-    const target = event.target;
-    if (event.key === "Backspace" && target.textContent?.trim() === "") {
-      removeEventListenersFromEditable(target);
-      if (target.previousElementSibling && "focus" in target.previousElementSibling) {
-        target.previousElementSibling.focus();
-        moveCursorToEndOfLine(target.previousElementSibling);
+(function () {
+  const textarea = document.querySelector("#content");
+  const AllContentOfLine = document.querySelectorAll('.contentOfLine');
+  const ContentOfLineID = document.querySelector("#contentOfLineID");
+  const ContainerMain = document.querySelector("#container_main");
+  ContentOfLineID.addEventListener("input", HandleEditor);
+  ContentOfLineID.addEventListener("input", HandleUpdateContent);
+  ContentOfLineID.addEventListener("paste", handleClearPaste);
+  ContentOfLineID.addEventListener("keydown", HandleEnterInEditor);
+  function HandleEditor(element) {
+    const CurrentElement = element.target;
+    const CurrentTextContent = String(CurrentElement.textContent) ?? '';
+    try {
+      if (!CurrentElement || CurrentTextContent === '') {
+        throw new TypeError("Conteúdo vazio ou inexistente");
       }
-      if (event.target.parentNode) {
-        target.parentNode?.removeChild(target);
-      }
+      const AllWordOfTextContent = CurrentTextContent.split(/\s+/);
+      CurrentElement.textContent = '';
+      AllWordOfTextContent.forEach((item, index) => {
+        const NewSpan = document.createElement("span");
+        NewSpan.textContent = item;
+        if (index !== AllWordOfTextContent.length - 1) {
+          NewSpan.innerHTML += '&nbsp;';
+        }
+        CurrentElement.appendChild(NewSpan);
+      });
+      moveCursorToEndOfLine(CurrentElement);
+    } catch (mensage) {
+      console.log(mensage);
+      return;
     }
   }
-}
-function removeEventListenersFromEditable(element) {
-  element.removeEventListener("keydown", HandleEditorElements);
-  element.removeEventListener("keydown", DeleteElement);
-  element.removeEventListener("input", handleFormatterCharacters);
-  element.removeEventListener("click", handleSelectionElement);
-  element.removeEventListener("paste", handleClearPaste);
-  element.removeEventListener("keydown", HandleItalicFormaterKeyDown);
-  element.removeEventListener("keydown", HandleBoldFormaterKeyDown);
-}
-export function moveCursorToEndOfLine(contentEditableElement) {
-  const range = document.createRange();
-  const selection = window.getSelection();
-  range.selectNodeContents(contentEditableElement);
-  range.collapse(false);
-  if (selection) {
-    selection.removeAllRanges();
-    selection.addRange(range);
+  function HandleUpdateContent() {
+    content = String(ContainerMain.textContent);
   }
-}
+  function HandleEnterInEditor(event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const NewDivLine = document.createElement('div');
+      const NewSpanContent = document.createElement('span');
+      NewDivLine.appendChild(NewSpanContent);
+      NewDivLine.className = 'line';
+      NewSpanContent.className = 'contentOfLine';
+      NewSpanContent.contentEditable = 'true';
+      NewSpanContent.addEventListener("input", HandleEditor);
+      NewSpanContent.addEventListener("input", HandleUpdateContent);
+      NewSpanContent.addEventListener("paste", handleClearPaste);
+      NewSpanContent.addEventListener("keydown", HandleEnterInEditor);
+      NewSpanContent.addEventListener("keydown", HandleDeleteElements);
+      ContainerMain.appendChild(NewDivLine);
+    }
+  }
+  function HandleDeleteElements(element) {
+    const CurrentElementr = element.target;
+    const CurrentTextContent = String(CurrentElementr.textContent);
+    const AllLines = document.querySelectorAll('.line');
+    if (element.key === 'Backspace' && CurrentTextContent === '') {
+      AllLines.forEach(item => {
+        if (item.contains(CurrentElementr)) {
+          HandleRemoveEvents(CurrentElementr);
+          CurrentElementr.remove();
+          item.remove();
+          return;
+        }
+      });
+    }
+  }
+  function HandleRemoveEvents(target) {
+    target.removeEventListener("input", HandleEditor);
+    target.removeEventListener("input", HandleUpdateContent);
+    target.removeEventListener("paste", handleClearPaste);
+    target.removeEventListener("keydown", HandleEnterInEditor);
+    target.removeEventListener("keydown", HandleDeleteElements);
+  }
+})();

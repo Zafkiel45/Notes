@@ -132,39 +132,6 @@ main {
   display: flex;
   justify-content: center;
 
-  .text_area {
-    background-color: transparent;
-    border: none;
-    width: 100%;
-    height: fit-content;
-    padding: 0.5rem 1.25rem;
-    color: #242424;
-    transition: background-color 0.3s ease;
-    font-size: 1.25rem;
-    border-radius: 5px;
-    &:focus {
-      background-color: rgba(150, 150, 174, 0.269);
-    }
-  }
-  .text_area_darkmode {
-    background-color: transparent;
-    border: none;
-    width: 100%;
-    height: fit-content;
-    padding: 0.5rem 1.25rem;
-    color: #e9e9e9;
-    transition: background-color 0.3s ease;
-    font-size: 1.25rem;
-    border-radius: 5px;
-
-    &:focus {
-      background-color: rgba(85, 85, 101, 0.254);
-    }
-  }
-  .placeholder::before {
-    content: attr(data-placeholder);
-    color: gray;
-  }
   .container_editor {
     width: 80%;
     height: auto;
@@ -172,38 +139,20 @@ main {
     padding: 0 1.25rem;
     margin-top: 7rem;
   }
-  .title {
-    font-size: 3rem;
+  .line {
+    width: 100%;
+    height: fit-content;
   }
-  .title_2 {
-    font-size: 2.5rem;
-  }
-  .title_3 {
-    font-size: 2rem;
-  }
+  .contentOfLine {
+    display: block;
+    width: 100%;
+    height: fit-content;
+    border-radius: 5px;
+    padding: 1rem;
 
-  .code_block {
-    background-color: rgb(31, 31, 31);
-    width: 100%;
-    height: fit-content;
-    border-radius: 5px;
-    padding: 2rem;
-    color: white;
-    overflow: auto;
-    line-height: 1.5rem;
-    font-family: "JetBrains", "Mono&quot", "Consolas", "Courier", "monospace";
-  }
-  .table {
-    background-color: rgb(39, 39, 39);
-    width: 100%;
-    height: fit-content;
-    border-radius: 5px;
-    padding: 2rem;
-    color: white;
-    overflow: auto;
-    margin: 0.4rem 0rem;
-    white-space: pre;
-    font-size: 1.5rem;
+    &:focus {
+      background-color: rgba(128, 128, 128, 0.208);
+    }
   }
 }
 @media (max-width: 835px) {

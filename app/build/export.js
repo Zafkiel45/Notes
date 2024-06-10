@@ -1,7 +1,7 @@
 const link = document.querySelector("#link");
 const export_button = document.querySelector("#export_button");
 import { ClearContentElement } from "./editor.js";
-import { HandleElementContent } from "./editor.js";
+import { HandleContentInEditor } from "./editor.js";
 function ExportFile(markdown) {
   let blob = new Blob([markdown], {
     type: "text/markdown;charset=utf-8"
@@ -15,5 +15,5 @@ function ExportFile(markdown) {
   }, 100);
 }
 export_button.addEventListener("click", () => {
-  ExportFile(String(HandleElementContent()));
+  ExportFile(HandleContentInEditor());
 });

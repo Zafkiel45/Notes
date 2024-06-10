@@ -4,7 +4,7 @@ const export_button = document.querySelector(
 ) as HTMLButtonElement;
 
 import { ClearContentElement } from "./editor.js";
-import { HandleElementContent } from "./editor.js";
+import { HandleContentInEditor } from "./editor.js";
 
 // export
 function ExportFile(markdown: string): void {
@@ -23,5 +23,5 @@ function ExportFile(markdown: string): void {
 }
 
 export_button.addEventListener("click", () => {
-  ExportFile(String(HandleElementContent()));
+  ExportFile(HandleContentInEditor());
 });
