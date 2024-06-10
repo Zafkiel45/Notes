@@ -1,8 +1,9 @@
+const ContainerMain = document.querySelector("#container_main");
 export let content;
 export function HandleContentInEditor() {
   const AllContentOfLine = document.querySelectorAll(".line");
   let NewStringContent = "";
-  AllContentOfLine.forEach((item) => {
+  AllContentOfLine.forEach(item => {
     NewStringContent += String(item.textContent) + "\n\n";
   });
   if (NewStringContent) {
@@ -25,6 +26,14 @@ export function isCursorAtEnd(element) {
   }
   return endOffset === element.childNodes.length;
 }
+export function HandleSelection() {
+  const AllElements = document.querySelectorAll(".selection");
+  AllElements.forEach(item => {
+    if (item.classList.contains("selection")) {
+      item.classList.remove("selection");
+    }
+  });
+}
 function moveCursorToEndOfLine(contentEditableElement) {
   const range = document.createRange();
   const selection = window.getSelection();
@@ -35,7 +44,7 @@ function moveCursorToEndOfLine(contentEditableElement) {
     selection.addRange(range);
   }
 }
-function handleClearPaste(e) {
+export function handleClearPaste(e) {
   e.preventDefault();
   let pasteContent = e.clipboardData?.getData("text/plain");
   if (!pasteContent) {
@@ -66,114 +75,101 @@ function handleClearPaste(e) {
     content = String(e.target.textContent);
   }
 }
+export function HandleDeleteElements(element) {
+  const CurrentElementr = element.target;
+  const CurrentTextContent = String(CurrentElementr.textContent);
+  const AllLines = document.querySelectorAll(".line");
+  if (element.key === "Backspace" && CurrentTextContent.trim() === "") {
+    AllLines.forEach(item => {
+      if (item.contains(CurrentElementr)) {
+        HandleRemoveEvents(CurrentElementr);
+        if (item.previousElementSibling && "focus" in item.previousElementSibling) {
+          HandleSelection();
+          item.previousElementSibling.lastElementChild.focus();
+          moveCursorToEndOfLine(item.previousElementSibling.lastElementChild);
+          item.previousElementSibling.classList.add("selection");
+        }
+        CurrentElementr.remove();
+        item.remove();
+        return;
+      }
+    });
+  }
+}
+function HandleRemoveEvents(target) {
+  target.removeEventListener("input", HandleEditor);
+  target.removeEventListener("input", HandleUpdateContent);
+  target.removeEventListener("paste", handleClearPaste);
+  target.removeEventListener("keydown", HandleEnterInEditor);
+  target.removeEventListener("keydown", HandleDeleteElements);
+}
+export function HandleEditor(element) {
+  const CurrentElement = element.target;
+  const CurrentTextContent = String(CurrentElement.textContent) ?? "";
+  try {
+    if (!CurrentElement || CurrentTextContent === "") {
+      throw new TypeError("Conteúdo vazio ou inexistente");
+    }
+    const AllWordOfTextContent = CurrentTextContent.split(/\s+/);
+    CurrentElement.textContent = "";
+    AllWordOfTextContent.forEach((item, index) => {
+      const NewSpan = document.createElement("span");
+      NewSpan.textContent = item;
+      if (index !== AllWordOfTextContent.length - 1) {
+        NewSpan.innerHTML += "&nbsp;";
+      }
+      CurrentElement.appendChild(NewSpan);
+    });
+    moveCursorToEndOfLine(CurrentElement);
+  } catch (mensage) {
+    console.log(mensage);
+    return;
+  }
+}
+export function HandleUpdateContent() {
+  content = String(ContainerMain.textContent);
+}
+export function HandleEnterInEditor(event) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    const NewDivLine = document.createElement("div");
+    const NewSpanContent = document.createElement("span");
+    const AllSelection = Array.from(document.querySelectorAll(".selection"));
+    const SelectedElement = AllSelection.find(item => {
+      return item.classList.contains("selection");
+    });
+    NewDivLine.appendChild(NewSpanContent);
+    NewDivLine.className = "line";
+    NewSpanContent.className = "contentOfLine";
+    NewSpanContent.contentEditable = "true";
+    NewSpanContent.addEventListener("input", HandleEditor);
+    NewSpanContent.addEventListener("input", HandleUpdateContent);
+    NewSpanContent.addEventListener("paste", handleClearPaste);
+    NewSpanContent.addEventListener("keydown", HandleEnterInEditor);
+    NewSpanContent.addEventListener("keydown", HandleDeleteElements);
+    NewSpanContent.addEventListener("click", HandleAddSelection);
+    SelectedElement?.insertAdjacentElement("afterend", NewDivLine);
+    HandleSelection();
+    NewDivLine.classList.add("selection");
+    NewSpanContent.focus();
+  }
+}
+export function HandleAddSelection(e) {
+  const CurrentElement = e.target;
+  const AllLines = document.querySelectorAll(".line");
+  HandleSelection();
+  AllLines.forEach(item => {
+    if (item.contains(CurrentElement)) {
+      item.classList.add("selection");
+    }
+  });
+}
 (function () {
-  const AllContentOfLine = document.querySelectorAll(".contentOfLine");
   const ContentOfLineID = document.querySelector("#contentOfLineID");
-  const ContainerMain = document.querySelector("#container_main");
   ContentOfLineID.focus();
   ContentOfLineID.addEventListener("input", HandleEditor);
   ContentOfLineID.addEventListener("input", HandleUpdateContent);
   ContentOfLineID.addEventListener("paste", handleClearPaste);
   ContentOfLineID.addEventListener("keydown", HandleEnterInEditor);
   ContentOfLineID.addEventListener("click", HandleAddSelection);
-  function HandleEditor(element) {
-    const CurrentElement = element.target;
-    const CurrentTextContent = String(CurrentElement.textContent) ?? "";
-    try {
-      if (!CurrentElement || CurrentTextContent === "") {
-        throw new TypeError("Conteúdo vazio ou inexistente");
-      }
-      const AllWordOfTextContent = CurrentTextContent.split(/\s+/);
-      CurrentElement.textContent = "";
-      AllWordOfTextContent.forEach((item, index) => {
-        const NewSpan = document.createElement("span");
-        NewSpan.textContent = item;
-        if (index !== AllWordOfTextContent.length - 1) {
-          NewSpan.innerHTML += "&nbsp;";
-        }
-        CurrentElement.appendChild(NewSpan);
-      });
-      moveCursorToEndOfLine(CurrentElement);
-    } catch (mensage) {
-      console.log(mensage);
-      return;
-    }
-  }
-  function HandleUpdateContent() {
-    content = String(ContainerMain.textContent);
-  }
-  function HandleEnterInEditor(event) {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      const NewDivLine = document.createElement("div");
-      const NewSpanContent = document.createElement("span");
-      const AllSelection = Array.from(document.querySelectorAll(".selection"));
-      const SelectedElement = AllSelection.find((item) => {
-        return item.classList.contains("selection");
-      });
-      NewDivLine.appendChild(NewSpanContent);
-      NewDivLine.className = "line";
-      NewSpanContent.className = "contentOfLine";
-      NewSpanContent.contentEditable = "true";
-      NewSpanContent.addEventListener("input", HandleEditor);
-      NewSpanContent.addEventListener("input", HandleUpdateContent);
-      NewSpanContent.addEventListener("paste", handleClearPaste);
-      NewSpanContent.addEventListener("keydown", HandleEnterInEditor);
-      NewSpanContent.addEventListener("keydown", HandleDeleteElements);
-      NewSpanContent.addEventListener("click", HandleAddSelection);
-      SelectedElement?.insertAdjacentElement("afterend", NewDivLine);
-      HandleSelection();
-      NewDivLine.classList.add("selection");
-      NewSpanContent.focus();
-    }
-  }
-  function HandleDeleteElements(element) {
-    const CurrentElementr = element.target;
-    const CurrentTextContent = String(CurrentElementr.textContent);
-    const AllLines = document.querySelectorAll(".line");
-    if (element.key === "Backspace" && CurrentTextContent.trim() === "") {
-      AllLines.forEach((item) => {
-        if (item.contains(CurrentElementr)) {
-          HandleRemoveEvents(CurrentElementr);
-          if (
-            item.previousElementSibling &&
-            "focus" in item.previousElementSibling
-          ) {
-            HandleSelection();
-            item.previousElementSibling.lastElementChild.focus();
-            moveCursorToEndOfLine(item.previousElementSibling.lastElementChild);
-            item.previousElementSibling.classList.add("selection");
-          }
-          CurrentElementr.remove();
-          item.remove();
-          return;
-        }
-      });
-    }
-  }
-  function HandleRemoveEvents(target) {
-    target.removeEventListener("input", HandleEditor);
-    target.removeEventListener("input", HandleUpdateContent);
-    target.removeEventListener("paste", handleClearPaste);
-    target.removeEventListener("keydown", HandleEnterInEditor);
-    target.removeEventListener("keydown", HandleDeleteElements);
-  }
-  function HandleSelection() {
-    const AllElements = document.querySelectorAll(".selection");
-    AllElements.forEach((item) => {
-      if (item.classList.contains("selection")) {
-        item.classList.remove("selection");
-      }
-    });
-  }
-  function HandleAddSelection(e) {
-    const CurrentElement = e.target;
-    const AllLines = document.querySelectorAll(".line");
-    HandleSelection();
-    AllLines.forEach((item) => {
-      if (item.contains(CurrentElement)) {
-        item.classList.add("selection");
-      }
-    });
-  }
 })();

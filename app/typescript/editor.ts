@@ -1,4 +1,10 @@
+type SpanElement = HTMLSpanElement;
+const ContainerMain = document.querySelector(
+  "#container_main",
+) as HTMLDivElement;
+
 export let content: string;
+
 export function HandleContentInEditor() {
   const AllContentOfLine = document.querySelectorAll<HTMLDivElement>(".line");
   let NewStringContent: string = "";
@@ -15,7 +21,7 @@ export function HandleContentInEditor() {
 export function ClearContentElement() {
   content = "";
 }
-export function isCursorAtEnd(element: HTMLDivElement) {
+export function isCursorAtEnd(element: HTMLPreElement) {
   const selection = window.getSelection();
   const nodeList = element.lastChild;
 
@@ -31,6 +37,15 @@ export function isCursorAtEnd(element: HTMLDivElement) {
 
   return endOffset === element.childNodes.length;
 }
+export function HandleSelection() {
+  const AllElements = document.querySelectorAll<SpanElement>(".selection");
+
+  AllElements.forEach((item) => {
+    if (item.classList.contains("selection")) {
+      item.classList.remove("selection");
+    }
+  });
+}
 function moveCursorToEndOfLine(contentEditableElement: any) {
   const range = document.createRange();
   const selection = window.getSelection();
@@ -44,7 +59,7 @@ function moveCursorToEndOfLine(contentEditableElement: any) {
     selection.addRange(range);
   }
 }
-function handleClearPaste(e: ClipboardEvent) {
+export function handleClearPaste(e: ClipboardEvent) {
   e.preventDefault();
   let pasteContent = e.clipboardData?.getData("text/plain");
 
@@ -81,19 +96,129 @@ function handleClearPaste(e: ClipboardEvent) {
     content = String((e.target as HTMLDivElement).textContent);
   }
 }
+export function HandleDeleteElements(element: KeyboardEvent) {
+  const CurrentElementr = element.target as SpanElement;
+  const CurrentTextContent = String(CurrentElementr.textContent);
+  const AllLines = document.querySelectorAll<HTMLDivElement>(".line");
+
+  if (element.key === "Backspace" && CurrentTextContent.trim() === "") {
+    AllLines.forEach((item) => {
+      if (item.contains(CurrentElementr)) {
+        HandleRemoveEvents(CurrentElementr);
+
+        if (
+          item.previousElementSibling &&
+          "focus" in item.previousElementSibling
+        ) {
+          HandleSelection();
+          (
+            item.previousElementSibling.lastElementChild as SpanElement
+          ).focus();
+          moveCursorToEndOfLine(
+            item.previousElementSibling.lastElementChild as SpanElement,
+          );
+          (item.previousElementSibling as HTMLDivElement).classList.add(
+            "selection",
+          );
+        }
+
+        CurrentElementr.remove();
+        item.remove();
+        return;
+      }
+    });
+  }
+}
+function HandleRemoveEvents(target: SpanElement) {
+  target.removeEventListener("input", HandleEditor);
+  target.removeEventListener("input", HandleUpdateContent);
+  target.removeEventListener("paste", handleClearPaste);
+  target.removeEventListener("keydown", HandleEnterInEditor);
+  target.removeEventListener("keydown", HandleDeleteElements);
+}
+export function HandleEditor(element: Event) {
+  const CurrentElement: SpanElement = element.target as HTMLSpanElement;
+  const CurrentTextContent: string = String(CurrentElement.textContent) ?? "";
+
+  try {
+    if (!CurrentElement || CurrentTextContent === "") {
+      throw new TypeError("Conteúdo vazio ou inexistente");
+    }
+    // divide todas as palavras com espaços em branco.
+    const AllWordOfTextContent = CurrentTextContent.split(/\s+/);
+
+    CurrentElement.textContent = "";
+
+    AllWordOfTextContent.forEach((item, index) => {
+      const NewSpan = document.createElement("span");
+
+      NewSpan.textContent = item;
+      // checa se a posição do elemento atual é diferente do comprimento
+      // evitando espaços em branco adicionais desnecessários.
+      if (index !== AllWordOfTextContent.length - 1) {
+        NewSpan.innerHTML += "&nbsp;";
+      }
+
+      CurrentElement.appendChild(NewSpan);
+    });
+    moveCursorToEndOfLine(CurrentElement);
+  } catch (mensage) {
+    console.log(mensage);
+    return;
+  }
+}
+export function HandleUpdateContent() {
+  content = String(ContainerMain.textContent);
+}
+export function HandleEnterInEditor(event: KeyboardEvent) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+
+    const NewDivLine = document.createElement("div");
+    const NewSpanContent = document.createElement("span");
+    const AllSelection = Array.from(document.querySelectorAll(".selection"));
+    const SelectedElement = AllSelection.find((item) => {
+      return item.classList.contains("selection");
+    });
+
+    NewDivLine.appendChild(NewSpanContent);
+    NewDivLine.className = "line";
+    NewSpanContent.className = "contentOfLine";
+    NewSpanContent.contentEditable = "true";
+
+    NewSpanContent.addEventListener("input", HandleEditor);
+    NewSpanContent.addEventListener("input", HandleUpdateContent);
+    NewSpanContent.addEventListener("paste", handleClearPaste);
+    NewSpanContent.addEventListener("keydown", HandleEnterInEditor);
+    NewSpanContent.addEventListener("keydown", HandleDeleteElements);
+    NewSpanContent.addEventListener("click", HandleAddSelection);
+
+    SelectedElement?.insertAdjacentElement("afterend", NewDivLine);
+    HandleSelection();
+
+    NewDivLine.classList.add("selection");
+    NewSpanContent.focus();
+  }
+}
+// função responsável por remover todos as classes .selection
+// assim garantido que não haja mais de um elemento com .selection
+export function HandleAddSelection(e: MouseEvent) {
+  const CurrentElement = e.target as SpanElement;
+  const AllLines = document.querySelectorAll<HTMLDivElement>(".line");
+
+  HandleSelection();
+
+  AllLines.forEach((item) => {
+    if (item.contains(CurrentElement)) {
+      item.classList.add("selection");
+    }
+  });
+}
 
 (function () {
-  const AllContentOfLine =
-    document.querySelectorAll<HTMLSpanElement>(".contentOfLine");
   const ContentOfLineID = document.querySelector(
     "#contentOfLineID",
   ) as HTMLSpanElement;
-  const ContainerMain = document.querySelector(
-    "#container_main",
-  ) as HTMLDivElement;
-
-  // types
-  type SpanElement = HTMLSpanElement;
 
   ContentOfLineID.focus();
   ContentOfLineID.addEventListener("input", HandleEditor);
@@ -102,128 +227,4 @@ function handleClearPaste(e: ClipboardEvent) {
   ContentOfLineID.addEventListener("keydown", HandleEnterInEditor);
   ContentOfLineID.addEventListener("click", HandleAddSelection);
 
-  function HandleEditor(element: Event) {
-    const CurrentElement: SpanElement = element.target as HTMLSpanElement;
-    const CurrentTextContent: string = String(CurrentElement.textContent) ?? "";
-
-    try {
-      if (!CurrentElement || CurrentTextContent === "") {
-        throw new TypeError("Conteúdo vazio ou inexistente");
-      }
-
-      const AllWordOfTextContent = CurrentTextContent.split(/\s+/);
-
-      CurrentElement.textContent = "";
-
-      AllWordOfTextContent.forEach((item, index) => {
-        const NewSpan = document.createElement("span");
-
-        NewSpan.textContent = item;
-
-        if (index !== AllWordOfTextContent.length - 1) {
-          NewSpan.innerHTML += "&nbsp;";
-        }
-
-        CurrentElement.appendChild(NewSpan);
-      });
-      moveCursorToEndOfLine(CurrentElement);
-    } catch (mensage) {
-      console.log(mensage);
-      return;
-    }
-  }
-  function HandleUpdateContent() {
-    content = String(ContainerMain.textContent);
-  }
-  function HandleEnterInEditor(event: KeyboardEvent) {
-    if (event.key === "Enter") {
-      event.preventDefault();
-
-      const NewDivLine = document.createElement("div");
-      const NewSpanContent = document.createElement("span");
-      const AllSelection = Array.from(document.querySelectorAll(".selection"));
-      const SelectedElement = AllSelection.find((item) => {
-        return item.classList.contains("selection");
-      });
-
-      NewDivLine.appendChild(NewSpanContent);
-      NewDivLine.className = "line";
-      NewSpanContent.className = "contentOfLine";
-      NewSpanContent.contentEditable = "true";
-
-      NewSpanContent.addEventListener("input", HandleEditor);
-      NewSpanContent.addEventListener("input", HandleUpdateContent);
-      NewSpanContent.addEventListener("paste", handleClearPaste);
-      NewSpanContent.addEventListener("keydown", HandleEnterInEditor);
-      NewSpanContent.addEventListener("keydown", HandleDeleteElements);
-      NewSpanContent.addEventListener("click", HandleAddSelection);
-
-      SelectedElement?.insertAdjacentElement("afterend", NewDivLine);
-      HandleSelection();
-
-      NewDivLine.classList.add("selection");
-      NewSpanContent.focus();
-    }
-  }
-  function HandleDeleteElements(element: KeyboardEvent) {
-    const CurrentElementr = element.target as SpanElement;
-    const CurrentTextContent = String(CurrentElementr.textContent);
-    const AllLines = document.querySelectorAll<HTMLDivElement>(".line");
-
-    if (element.key === "Backspace" && CurrentTextContent.trim() === "") {
-      AllLines.forEach((item) => {
-        if (item.contains(CurrentElementr)) {
-          HandleRemoveEvents(CurrentElementr);
-
-          if (
-            item.previousElementSibling &&
-            "focus" in item.previousElementSibling
-          ) {
-            HandleSelection();
-            (
-              item.previousElementSibling.lastElementChild as SpanElement
-            ).focus();
-            moveCursorToEndOfLine(
-              item.previousElementSibling.lastElementChild as SpanElement,
-            );
-            (item.previousElementSibling as HTMLDivElement).classList.add(
-              "selection",
-            );
-          }
-
-          CurrentElementr.remove();
-          item.remove();
-          return;
-        }
-      });
-    }
-  }
-  function HandleRemoveEvents(target: SpanElement) {
-    target.removeEventListener("input", HandleEditor);
-    target.removeEventListener("input", HandleUpdateContent);
-    target.removeEventListener("paste", handleClearPaste);
-    target.removeEventListener("keydown", HandleEnterInEditor);
-    target.removeEventListener("keydown", HandleDeleteElements);
-  }
-  function HandleSelection() {
-    const AllElements = document.querySelectorAll<SpanElement>(".selection");
-
-    AllElements.forEach((item) => {
-      if (item.classList.contains("selection")) {
-        item.classList.remove("selection");
-      }
-    });
-  }
-  function HandleAddSelection(e: MouseEvent) {
-    const CurrentElement = e.target as SpanElement;
-    const AllLines = document.querySelectorAll<HTMLDivElement>(".line");
-
-    HandleSelection();
-
-    AllLines.forEach((item) => {
-      if (item.contains(CurrentElement)) {
-        item.classList.add("selection");
-      }
-    });
-  }
 })();
