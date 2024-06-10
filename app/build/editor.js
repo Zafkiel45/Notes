@@ -1,4 +1,15 @@
 export let content;
+export function HandleContentInEditor() {
+  const AllContentOfLine = document.querySelectorAll(".line");
+  let NewStringContent = "";
+  AllContentOfLine.forEach((item) => {
+    NewStringContent += String(item.textContent) + "\n\n";
+  });
+  if (NewStringContent) {
+    content = String(NewStringContent);
+  }
+  return content.trim();
+}
 export function ClearContentElement() {
   content = "";
 }
@@ -13,15 +24,6 @@ export function isCursorAtEnd(element) {
     return endOffset === nodeList?.textContent?.length;
   }
   return endOffset === element.childNodes.length;
-}
-export function HandleContentInEditor() {
-  const Contents = document.querySelectorAll(".contentOfLine");
-  let NewContent = null;
-  Contents.forEach(item => {
-    NewContent += String(item.textContent);
-  });
-  const WhiteSpacesFormated = String(NewContent).replace(/\n/g, "<br>");
-  return content = String(WhiteSpacesFormated);
 }
 function moveCursorToEndOfLine(contentEditableElement) {
   const range = document.createRange();
@@ -106,8 +108,8 @@ function handleClearPaste(e) {
       const NewDivLine = document.createElement("div");
       const NewSpanContent = document.createElement("span");
       const AllSelection = Array.from(document.querySelectorAll(".selection"));
-      const SelectedElement = AllSelection.find(item => {
-        return item.classList.contains('selection');
+      const SelectedElement = AllSelection.find((item) => {
+        return item.classList.contains("selection");
       });
       NewDivLine.appendChild(NewSpanContent);
       NewDivLine.className = "line";
@@ -121,7 +123,7 @@ function handleClearPaste(e) {
       NewSpanContent.addEventListener("click", HandleAddSelection);
       SelectedElement?.insertAdjacentElement("afterend", NewDivLine);
       HandleSelection();
-      NewDivLine.classList.add('selection');
+      NewDivLine.classList.add("selection");
       NewSpanContent.focus();
     }
   }
@@ -130,14 +132,17 @@ function handleClearPaste(e) {
     const CurrentTextContent = String(CurrentElementr.textContent);
     const AllLines = document.querySelectorAll(".line");
     if (element.key === "Backspace" && CurrentTextContent.trim() === "") {
-      AllLines.forEach(item => {
+      AllLines.forEach((item) => {
         if (item.contains(CurrentElementr)) {
           HandleRemoveEvents(CurrentElementr);
-          if (item.previousElementSibling && "focus" in item.previousElementSibling) {
+          if (
+            item.previousElementSibling &&
+            "focus" in item.previousElementSibling
+          ) {
             HandleSelection();
             item.previousElementSibling.lastElementChild.focus();
             moveCursorToEndOfLine(item.previousElementSibling.lastElementChild);
-            item.previousElementSibling.classList.add('selection');
+            item.previousElementSibling.classList.add("selection");
           }
           CurrentElementr.remove();
           item.remove();
@@ -155,9 +160,9 @@ function handleClearPaste(e) {
   }
   function HandleSelection() {
     const AllElements = document.querySelectorAll(".selection");
-    AllElements.forEach(item => {
-      if (item.classList.contains('selection')) {
-        item.classList.remove('selection');
+    AllElements.forEach((item) => {
+      if (item.classList.contains("selection")) {
+        item.classList.remove("selection");
       }
     });
   }
@@ -165,9 +170,9 @@ function handleClearPaste(e) {
     const CurrentElement = e.target;
     const AllLines = document.querySelectorAll(".line");
     HandleSelection();
-    AllLines.forEach(item => {
+    AllLines.forEach((item) => {
       if (item.contains(CurrentElement)) {
-        item.classList.add('selection');
+        item.classList.add("selection");
       }
     });
   }

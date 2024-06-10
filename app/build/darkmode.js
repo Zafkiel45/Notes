@@ -17,12 +17,14 @@ function updateElementAreas() {
   return document.querySelectorAll(".text_area, .text_area_darkmode");
 }
 function checkMode() {
-  const preferenceTheme = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const preferenceTheme = window.matchMedia(
+    "(prefers-color-scheme: dark)",
+  ).matches;
   localStorage.theme = preferenceTheme ? "dark" : "light";
   updateElements();
 }
 function MultplesElements(elements, ClassAdd, ClassRemove) {
-  elements.forEach(item => {
+  elements.forEach((item) => {
     item.classList.remove(ClassRemove);
     item.classList.add(ClassAdd);
   });
@@ -40,15 +42,31 @@ function updateElements() {
     if (localStorage.theme === "dark") {
       UniqueElements(body, BODY_ELEMENT_DARKMODE, BODY_ELEMENT_LIGHTMODE);
       UniqueElements(header, HEADER_ELEMENT_DARKMODE, HEADER_ELEMENT_LIGHTMODE);
-      MultplesElements(updateElementAreas(), DIV_ELEMENT_DARKMODE, DIV_ELEMENT_LIGHTMODE);
+      MultplesElements(
+        updateElementAreas(),
+        DIV_ELEMENT_DARKMODE,
+        DIV_ELEMENT_LIGHTMODE,
+      );
       MultplesElements(svgs, SVG_ELEMENT_DARKMODE, SVG_ELEMENT_LIGHTKMODE);
-      UniqueElements(buttons_nav, BUTTON_ELEMENT_DARKMODE, BUTTON_ELEMENT_LIGHTMODE);
+      UniqueElements(
+        buttons_nav,
+        BUTTON_ELEMENT_DARKMODE,
+        BUTTON_ELEMENT_LIGHTMODE,
+      );
     } else {
       UniqueElements(body, BODY_ELEMENT_LIGHTMODE, BODY_ELEMENT_DARKMODE);
       UniqueElements(header, HEADER_ELEMENT_LIGHTMODE, HEADER_ELEMENT_DARKMODE);
-      MultplesElements(updateElementAreas(), DIV_ELEMENT_LIGHTMODE, DIV_ELEMENT_DARKMODE);
+      MultplesElements(
+        updateElementAreas(),
+        DIV_ELEMENT_LIGHTMODE,
+        DIV_ELEMENT_DARKMODE,
+      );
       MultplesElements(svgs, SVG_ELEMENT_LIGHTKMODE, SVG_ELEMENT_DARKMODE);
-      UniqueElements(buttons_nav, BUTTON_ELEMENT_LIGHTMODE, BUTTON_ELEMENT_DARKMODE);
+      UniqueElements(
+        buttons_nav,
+        BUTTON_ELEMENT_LIGHTMODE,
+        BUTTON_ELEMENT_DARKMODE,
+      );
     }
   } catch (mensage) {
     window.alert(mensage);

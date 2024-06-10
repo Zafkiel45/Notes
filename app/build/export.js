@@ -4,7 +4,7 @@ import { ClearContentElement } from "./editor.js";
 import { HandleContentInEditor } from "./editor.js";
 function ExportFile(markdown) {
   let blob = new Blob([markdown], {
-    type: "text/markdown;charset=utf-8"
+    type: "text/markdown;charset=utf-8",
   });
   let url = URL.createObjectURL(blob);
   link.href = url;

@@ -6,6 +6,4 @@ const italic_btn = document.querySelector("#italic_button") as btn_type;
 const bold_btn = document.querySelector("#bolder_button") as btn_type;
 const textarea = document.querySelector("#content") as element_type;
 
-function HandleCodeBlock() {
-  
-}
+function HandleCodeBlock() {}

@@ -1,5 +1,17 @@
 export let content: string;
+export function HandleContentInEditor() {
+  const AllContentOfLine = document.querySelectorAll<HTMLDivElement>(".line");
+  let NewStringContent: string = "";
 
+  AllContentOfLine.forEach((item) => {
+    NewStringContent += String(item.textContent) + "\n\n";
+  });
+
+  if (NewStringContent) {
+    content = String(NewStringContent);
+  }
+  return content.trim();
+}
 export function ClearContentElement() {
   content = "";
 }
@@ -18,18 +30,6 @@ export function isCursorAtEnd(element: HTMLDivElement) {
   }
 
   return endOffset === element.childNodes.length;
-}
-export function HandleContentInEditor() {
-  const Contents = document.querySelectorAll<HTMLSpanElement>(".contentOfLine");
-  let NewContent: string | null = null;
-
-  Contents.forEach((item) => {
-    NewContent += String(item.textContent);
-  });
-
-  const WhiteSpacesFormated = String(NewContent).replace(/\n/g, "<br>");
-
-  return (content = String(WhiteSpacesFormated));
 }
 function moveCursorToEndOfLine(contentEditableElement: any) {
   const range = document.createRange();
@@ -83,7 +83,8 @@ function handleClearPaste(e: ClipboardEvent) {
 }
 
 (function () {
-  const AllContentOfLine = document.querySelectorAll<HTMLSpanElement>(".contentOfLine");
+  const AllContentOfLine =
+    document.querySelectorAll<HTMLSpanElement>(".contentOfLine");
   const ContentOfLineID = document.querySelector(
     "#contentOfLineID",
   ) as HTMLSpanElement;
@@ -94,7 +95,7 @@ function handleClearPaste(e: ClipboardEvent) {
   // types
   type SpanElement = HTMLSpanElement;
 
-  ContentOfLineID.focus()
+  ContentOfLineID.focus();
   ContentOfLineID.addEventListener("input", HandleEditor);
   ContentOfLineID.addEventListener("input", HandleUpdateContent);
   ContentOfLineID.addEventListener("paste", handleClearPaste);
@@ -142,7 +143,7 @@ function handleClearPaste(e: ClipboardEvent) {
       const NewSpanContent = document.createElement("span");
       const AllSelection = Array.from(document.querySelectorAll(".selection"));
       const SelectedElement = AllSelection.find((item) => {
-        return item.classList.contains('selection');
+        return item.classList.contains("selection");
       });
 
       NewDivLine.appendChild(NewSpanContent);
@@ -160,7 +161,7 @@ function handleClearPaste(e: ClipboardEvent) {
       SelectedElement?.insertAdjacentElement("afterend", NewDivLine);
       HandleSelection();
 
-      NewDivLine.classList.add('selection');
+      NewDivLine.classList.add("selection");
       NewSpanContent.focus();
     }
   }
@@ -185,11 +186,11 @@ function handleClearPaste(e: ClipboardEvent) {
             moveCursorToEndOfLine(
               item.previousElementSibling.lastElementChild as SpanElement,
             );
-            (
-              item.previousElementSibling as HTMLDivElement
-            ).classList.add('selection');
+            (item.previousElementSibling as HTMLDivElement).classList.add(
+              "selection",
+            );
           }
-          
+
           CurrentElementr.remove();
           item.remove();
           return;
@@ -208,21 +209,21 @@ function handleClearPaste(e: ClipboardEvent) {
     const AllElements = document.querySelectorAll<SpanElement>(".selection");
 
     AllElements.forEach((item) => {
-      if(item.classList.contains('selection')) {
-        item.classList.remove('selection');
+      if (item.classList.contains("selection")) {
+        item.classList.remove("selection");
       }
-    })
+    });
   }
   function HandleAddSelection(e: MouseEvent) {
-      const CurrentElement = e.target as SpanElement;
-      const AllLines = document.querySelectorAll<HTMLDivElement>(".line");
+    const CurrentElement = e.target as SpanElement;
+    const AllLines = document.querySelectorAll<HTMLDivElement>(".line");
 
-      HandleSelection();
+    HandleSelection();
 
-      AllLines.forEach((item) => {
-        if(item.contains(CurrentElement)) {
-          item.classList.add('selection');
-        }
-      })
+    AllLines.forEach((item) => {
+      if (item.contains(CurrentElement)) {
+        item.classList.add("selection");
+      }
+    });
   }
 })();
