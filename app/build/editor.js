@@ -65,14 +65,15 @@ function handleClearPaste(e) {
   }
 }
 (function () {
-  const textarea = document.querySelector("#content");
   const AllContentOfLine = document.querySelectorAll(".contentOfLine");
   const ContentOfLineID = document.querySelector("#contentOfLineID");
   const ContainerMain = document.querySelector("#container_main");
+  ContentOfLineID.focus();
   ContentOfLineID.addEventListener("input", HandleEditor);
   ContentOfLineID.addEventListener("input", HandleUpdateContent);
   ContentOfLineID.addEventListener("paste", handleClearPaste);
   ContentOfLineID.addEventListener("keydown", HandleEnterInEditor);
+  ContentOfLineID.addEventListener("click", HandleAddSelection);
   function HandleEditor(element) {
     const CurrentElement = element.target;
     const CurrentTextContent = String(CurrentElement.textContent) ?? "";
@@ -104,6 +105,10 @@ function handleClearPaste(e) {
       event.preventDefault();
       const NewDivLine = document.createElement("div");
       const NewSpanContent = document.createElement("span");
+      const AllSelection = Array.from(document.querySelectorAll(".selection"));
+      const SelectedElement = AllSelection.find(item => {
+        return item.classList.contains('selection');
+      });
       NewDivLine.appendChild(NewSpanContent);
       NewDivLine.className = "line";
       NewSpanContent.className = "contentOfLine";
@@ -113,7 +118,10 @@ function handleClearPaste(e) {
       NewSpanContent.addEventListener("paste", handleClearPaste);
       NewSpanContent.addEventListener("keydown", HandleEnterInEditor);
       NewSpanContent.addEventListener("keydown", HandleDeleteElements);
-      ContainerMain.appendChild(NewDivLine);
+      NewSpanContent.addEventListener("click", HandleAddSelection);
+      SelectedElement?.insertAdjacentElement("afterend", NewDivLine);
+      HandleSelection();
+      NewDivLine.classList.add('selection');
       NewSpanContent.focus();
     }
   }
@@ -126,8 +134,10 @@ function handleClearPaste(e) {
         if (item.contains(CurrentElementr)) {
           HandleRemoveEvents(CurrentElementr);
           if (item.previousElementSibling && "focus" in item.previousElementSibling) {
+            HandleSelection();
             item.previousElementSibling.lastElementChild.focus();
             moveCursorToEndOfLine(item.previousElementSibling.lastElementChild);
+            item.previousElementSibling.classList.add('selection');
           }
           CurrentElementr.remove();
           item.remove();
@@ -142,5 +152,23 @@ function handleClearPaste(e) {
     target.removeEventListener("paste", handleClearPaste);
     target.removeEventListener("keydown", HandleEnterInEditor);
     target.removeEventListener("keydown", HandleDeleteElements);
+  }
+  function HandleSelection() {
+    const AllElements = document.querySelectorAll(".selection");
+    AllElements.forEach(item => {
+      if (item.classList.contains('selection')) {
+        item.classList.remove('selection');
+      }
+    });
+  }
+  function HandleAddSelection(e) {
+    const CurrentElement = e.target;
+    const AllLines = document.querySelectorAll(".line");
+    HandleSelection();
+    AllLines.forEach(item => {
+      if (item.contains(CurrentElement)) {
+        item.classList.add('selection');
+      }
+    });
   }
 })();

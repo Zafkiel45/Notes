@@ -83,9 +83,7 @@ function handleClearPaste(e: ClipboardEvent) {
 }
 
 (function () {
-  const textarea = document.querySelector("#content") as HTMLDivElement;
-  const AllContentOfLine =
-    document.querySelectorAll<HTMLSpanElement>(".contentOfLine");
+  const AllContentOfLine = document.querySelectorAll<HTMLSpanElement>(".contentOfLine");
   const ContentOfLineID = document.querySelector(
     "#contentOfLineID",
   ) as HTMLSpanElement;
@@ -96,10 +94,12 @@ function handleClearPaste(e: ClipboardEvent) {
   // types
   type SpanElement = HTMLSpanElement;
 
+  ContentOfLineID.focus()
   ContentOfLineID.addEventListener("input", HandleEditor);
   ContentOfLineID.addEventListener("input", HandleUpdateContent);
   ContentOfLineID.addEventListener("paste", handleClearPaste);
   ContentOfLineID.addEventListener("keydown", HandleEnterInEditor);
+  ContentOfLineID.addEventListener("click", HandleAddSelection);
 
   function HandleEditor(element: Event) {
     const CurrentElement: SpanElement = element.target as HTMLSpanElement;
@@ -140,6 +140,10 @@ function handleClearPaste(e: ClipboardEvent) {
 
       const NewDivLine = document.createElement("div");
       const NewSpanContent = document.createElement("span");
+      const AllSelection = Array.from(document.querySelectorAll(".selection"));
+      const SelectedElement = AllSelection.find((item) => {
+        return item.classList.contains('selection');
+      });
 
       NewDivLine.appendChild(NewSpanContent);
       NewDivLine.className = "line";
@@ -151,8 +155,12 @@ function handleClearPaste(e: ClipboardEvent) {
       NewSpanContent.addEventListener("paste", handleClearPaste);
       NewSpanContent.addEventListener("keydown", HandleEnterInEditor);
       NewSpanContent.addEventListener("keydown", HandleDeleteElements);
+      NewSpanContent.addEventListener("click", HandleAddSelection);
 
-      ContainerMain.appendChild(NewDivLine);
+      SelectedElement?.insertAdjacentElement("afterend", NewDivLine);
+      HandleSelection();
+
+      NewDivLine.classList.add('selection');
       NewSpanContent.focus();
     }
   }
@@ -170,14 +178,18 @@ function handleClearPaste(e: ClipboardEvent) {
             item.previousElementSibling &&
             "focus" in item.previousElementSibling
           ) {
+            HandleSelection();
             (
               item.previousElementSibling.lastElementChild as SpanElement
             ).focus();
             moveCursorToEndOfLine(
               item.previousElementSibling.lastElementChild as SpanElement,
             );
+            (
+              item.previousElementSibling as HTMLDivElement
+            ).classList.add('selection');
           }
-
+          
           CurrentElementr.remove();
           item.remove();
           return;
@@ -191,5 +203,26 @@ function handleClearPaste(e: ClipboardEvent) {
     target.removeEventListener("paste", handleClearPaste);
     target.removeEventListener("keydown", HandleEnterInEditor);
     target.removeEventListener("keydown", HandleDeleteElements);
+  }
+  function HandleSelection() {
+    const AllElements = document.querySelectorAll<SpanElement>(".selection");
+
+    AllElements.forEach((item) => {
+      if(item.classList.contains('selection')) {
+        item.classList.remove('selection');
+      }
+    })
+  }
+  function HandleAddSelection(e: MouseEvent) {
+      const CurrentElement = e.target as SpanElement;
+      const AllLines = document.querySelectorAll<HTMLDivElement>(".line");
+
+      HandleSelection();
+
+      AllLines.forEach((item) => {
+        if(item.contains(CurrentElement)) {
+          item.classList.add('selection');
+        }
+      })
   }
 })();
