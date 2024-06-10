@@ -1,7 +1,9 @@
 const body = document.querySelector(".container_master") as HTMLBodyElement;
 const header = document.querySelector("#header") as HTMLHeadElement;
-const svgs = document.querySelectorAll<SVGAElement>('.svgs');
-const buttons_nav = document.querySelector('#container_buttons_nav_header') as HTMLDivElement;
+const svgs = document.querySelectorAll<SVGAElement>(".svgs");
+const buttons_nav = document.querySelector(
+  "#container_buttons_nav_header",
+) as HTMLDivElement;
 const switchButton = document.querySelector(
   "#switchButton",
 ) as HTMLButtonElement;
@@ -12,8 +14,8 @@ const DIV_ELEMENT_LIGHTMODE: string = "text_area";
 const BODY_ELEMENT_LIGHTMODE: string = "container_master";
 const HEADER_ELEMENT_DARKMODE: string = "container_header_darkmode";
 const HEADER_ELEMENT_LIGHTMODE: string = "container_header";
-const SVG_ELEMENT_DARKMODE: string = 'svgs_darkmode';
-const SVG_ELEMENT_LIGHTKMODE: string = 'svgs';
+const SVG_ELEMENT_DARKMODE: string = "svgs_darkmode";
+const SVG_ELEMENT_LIGHTKMODE: string = "svgs";
 const BUTTON_ELEMENT_DARKMODE: string = "container_buttons_nav_header_darkmode";
 const BUTTON_ELEMENT_LIGHTMODE: string = "container_buttons_nav_header";
 
@@ -66,7 +68,11 @@ function updateElements(): void {
         DIV_ELEMENT_LIGHTMODE,
       );
       MultplesElements(svgs, SVG_ELEMENT_DARKMODE, SVG_ELEMENT_LIGHTKMODE);
-      UniqueElements(buttons_nav, BUTTON_ELEMENT_DARKMODE, BUTTON_ELEMENT_LIGHTMODE);
+      UniqueElements(
+        buttons_nav,
+        BUTTON_ELEMENT_DARKMODE,
+        BUTTON_ELEMENT_LIGHTMODE,
+      );
     } else {
       UniqueElements(body, BODY_ELEMENT_LIGHTMODE, BODY_ELEMENT_DARKMODE);
       UniqueElements(header, HEADER_ELEMENT_LIGHTMODE, HEADER_ELEMENT_DARKMODE);
@@ -76,7 +82,11 @@ function updateElements(): void {
         DIV_ELEMENT_DARKMODE,
       );
       MultplesElements(svgs, SVG_ELEMENT_LIGHTKMODE, SVG_ELEMENT_DARKMODE);
-      UniqueElements(buttons_nav, BUTTON_ELEMENT_LIGHTMODE, BUTTON_ELEMENT_DARKMODE);
+      UniqueElements(
+        buttons_nav,
+        BUTTON_ELEMENT_LIGHTMODE,
+        BUTTON_ELEMENT_DARKMODE,
+      );
     }
   } catch (mensage) {
     window.alert(mensage);

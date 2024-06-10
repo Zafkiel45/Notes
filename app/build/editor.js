@@ -15,12 +15,12 @@ export function isCursorAtEnd(element) {
   return endOffset === element.childNodes.length;
 }
 export function HandleContentInEditor() {
-  const Contents = document.querySelectorAll('.contentOfLine');
+  const Contents = document.querySelectorAll(".contentOfLine");
   let NewContent = null;
   Contents.forEach(item => {
     NewContent += String(item.textContent);
   });
-  const WhiteSpacesFormated = String(NewContent).replace(/\n/g, '<br>');
+  const WhiteSpacesFormated = String(NewContent).replace(/\n/g, "<br>");
   return content = String(WhiteSpacesFormated);
 }
 function moveCursorToEndOfLine(contentEditableElement) {
@@ -66,7 +66,7 @@ function handleClearPaste(e) {
 }
 (function () {
   const textarea = document.querySelector("#content");
-  const AllContentOfLine = document.querySelectorAll('.contentOfLine');
+  const AllContentOfLine = document.querySelectorAll(".contentOfLine");
   const ContentOfLineID = document.querySelector("#contentOfLineID");
   const ContainerMain = document.querySelector("#container_main");
   ContentOfLineID.addEventListener("input", HandleEditor);
@@ -75,18 +75,18 @@ function handleClearPaste(e) {
   ContentOfLineID.addEventListener("keydown", HandleEnterInEditor);
   function HandleEditor(element) {
     const CurrentElement = element.target;
-    const CurrentTextContent = String(CurrentElement.textContent) ?? '';
+    const CurrentTextContent = String(CurrentElement.textContent) ?? "";
     try {
-      if (!CurrentElement || CurrentTextContent === '') {
+      if (!CurrentElement || CurrentTextContent === "") {
         throw new TypeError("Conteúdo vazio ou inexistente");
       }
       const AllWordOfTextContent = CurrentTextContent.split(/\s+/);
-      CurrentElement.textContent = '';
+      CurrentElement.textContent = "";
       AllWordOfTextContent.forEach((item, index) => {
         const NewSpan = document.createElement("span");
         NewSpan.textContent = item;
         if (index !== AllWordOfTextContent.length - 1) {
-          NewSpan.innerHTML += '&nbsp;';
+          NewSpan.innerHTML += "&nbsp;";
         }
         CurrentElement.appendChild(NewSpan);
       });
@@ -100,30 +100,35 @@ function handleClearPaste(e) {
     content = String(ContainerMain.textContent);
   }
   function HandleEnterInEditor(event) {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       event.preventDefault();
-      const NewDivLine = document.createElement('div');
-      const NewSpanContent = document.createElement('span');
+      const NewDivLine = document.createElement("div");
+      const NewSpanContent = document.createElement("span");
       NewDivLine.appendChild(NewSpanContent);
-      NewDivLine.className = 'line';
-      NewSpanContent.className = 'contentOfLine';
-      NewSpanContent.contentEditable = 'true';
+      NewDivLine.className = "line";
+      NewSpanContent.className = "contentOfLine";
+      NewSpanContent.contentEditable = "true";
       NewSpanContent.addEventListener("input", HandleEditor);
       NewSpanContent.addEventListener("input", HandleUpdateContent);
       NewSpanContent.addEventListener("paste", handleClearPaste);
       NewSpanContent.addEventListener("keydown", HandleEnterInEditor);
       NewSpanContent.addEventListener("keydown", HandleDeleteElements);
       ContainerMain.appendChild(NewDivLine);
+      NewSpanContent.focus();
     }
   }
   function HandleDeleteElements(element) {
     const CurrentElementr = element.target;
     const CurrentTextContent = String(CurrentElementr.textContent);
-    const AllLines = document.querySelectorAll('.line');
-    if (element.key === 'Backspace' && CurrentTextContent === '') {
+    const AllLines = document.querySelectorAll(".line");
+    if (element.key === "Backspace" && CurrentTextContent.trim() === "") {
       AllLines.forEach(item => {
         if (item.contains(CurrentElementr)) {
           HandleRemoveEvents(CurrentElementr);
+          if (item.previousElementSibling && "focus" in item.previousElementSibling) {
+            item.previousElementSibling.lastElementChild.focus();
+            moveCursorToEndOfLine(item.previousElementSibling.lastElementChild);
+          }
           CurrentElementr.remove();
           item.remove();
           return;

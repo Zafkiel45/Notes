@@ -11,9 +11,9 @@ const textarea = document.querySelector("#content") as element_type;
 code_btn.addEventListener("click", HandleCodeButton);
 
 function HandleCodeButton() {
-    const textContent = String(textarea.textContent) ?? "";
+  const textContent = String(textarea.textContent) ?? "";
 
-    textarea.textContent = textContent + '\n\n' + '```javascript\n\n\n```';
-    isCursorAtEnd(textarea);
-    textarea.focus();
-};
+  textarea.textContent = textContent + "\n\n" + "```javascript\n\n\n```";
+  isCursorAtEnd(textarea);
+  textarea.focus();
+}

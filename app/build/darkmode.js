@@ -1,7 +1,7 @@
 const body = document.querySelector(".container_master");
 const header = document.querySelector("#header");
-const svgs = document.querySelectorAll('.svgs');
-const buttons_nav = document.querySelector('#container_buttons_nav_header');
+const svgs = document.querySelectorAll(".svgs");
+const buttons_nav = document.querySelector("#container_buttons_nav_header");
 const switchButton = document.querySelector("#switchButton");
 const DIV_ELEMENT_DARKMODE = "text_area_darkmode";
 const BODY_ELEMENT_DARKMODE = "container_master_darkmode";
@@ -9,8 +9,8 @@ const DIV_ELEMENT_LIGHTMODE = "text_area";
 const BODY_ELEMENT_LIGHTMODE = "container_master";
 const HEADER_ELEMENT_DARKMODE = "container_header_darkmode";
 const HEADER_ELEMENT_LIGHTMODE = "container_header";
-const SVG_ELEMENT_DARKMODE = 'svgs_darkmode';
-const SVG_ELEMENT_LIGHTKMODE = 'svgs';
+const SVG_ELEMENT_DARKMODE = "svgs_darkmode";
+const SVG_ELEMENT_LIGHTKMODE = "svgs";
 const BUTTON_ELEMENT_DARKMODE = "container_buttons_nav_header_darkmode";
 const BUTTON_ELEMENT_LIGHTMODE = "container_buttons_nav_header";
 function updateElementAreas() {

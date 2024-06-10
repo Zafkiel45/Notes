@@ -1,4 +1,3 @@
-
 export let content: string;
 
 export function ClearContentElement() {
@@ -21,16 +20,16 @@ export function isCursorAtEnd(element: HTMLDivElement) {
   return endOffset === element.childNodes.length;
 }
 export function HandleContentInEditor() {
-  const Contents = document.querySelectorAll<HTMLSpanElement>('.contentOfLine');
+  const Contents = document.querySelectorAll<HTMLSpanElement>(".contentOfLine");
   let NewContent: string | null = null;
 
   Contents.forEach((item) => {
     NewContent += String(item.textContent);
-  })
+  });
 
-  const WhiteSpacesFormated = String(NewContent).replace(/\n/g, '<br>');
+  const WhiteSpacesFormated = String(NewContent).replace(/\n/g, "<br>");
 
-  return content = String(WhiteSpacesFormated);
+  return (content = String(WhiteSpacesFormated));
 }
 function moveCursorToEndOfLine(contentEditableElement: any) {
   const range = document.createRange();
@@ -83,15 +82,20 @@ function handleClearPaste(e: ClipboardEvent) {
   }
 }
 
-(function() {
+(function () {
   const textarea = document.querySelector("#content") as HTMLDivElement;
-  const AllContentOfLine = document.querySelectorAll<HTMLSpanElement>('.contentOfLine');
-  const ContentOfLineID = document.querySelector("#contentOfLineID") as HTMLSpanElement;
-  const ContainerMain = document.querySelector("#container_main") as HTMLDivElement;
-  
-  // types 
+  const AllContentOfLine =
+    document.querySelectorAll<HTMLSpanElement>(".contentOfLine");
+  const ContentOfLineID = document.querySelector(
+    "#contentOfLineID",
+  ) as HTMLSpanElement;
+  const ContainerMain = document.querySelector(
+    "#container_main",
+  ) as HTMLDivElement;
+
+  // types
   type SpanElement = HTMLSpanElement;
-  
+
   ContentOfLineID.addEventListener("input", HandleEditor);
   ContentOfLineID.addEventListener("input", HandleUpdateContent);
   ContentOfLineID.addEventListener("paste", handleClearPaste);
@@ -99,73 +103,86 @@ function handleClearPaste(e: ClipboardEvent) {
 
   function HandleEditor(element: Event) {
     const CurrentElement: SpanElement = element.target as HTMLSpanElement;
-    const CurrentTextContent: string = String(CurrentElement.textContent) ?? '';
-    
+    const CurrentTextContent: string = String(CurrentElement.textContent) ?? "";
+
     try {
-      if(!CurrentElement || CurrentTextContent === '') {
+      if (!CurrentElement || CurrentTextContent === "") {
         throw new TypeError("Conteúdo vazio ou inexistente");
       }
 
       const AllWordOfTextContent = CurrentTextContent.split(/\s+/);
 
-      CurrentElement.textContent = '';
-  
+      CurrentElement.textContent = "";
+
       AllWordOfTextContent.forEach((item, index) => {
         const NewSpan = document.createElement("span");
-  
+
         NewSpan.textContent = item;
-        
-        if (index!== AllWordOfTextContent.length - 1) {
-          NewSpan.innerHTML += '&nbsp;';
+
+        if (index !== AllWordOfTextContent.length - 1) {
+          NewSpan.innerHTML += "&nbsp;";
         }
-  
+
         CurrentElement.appendChild(NewSpan);
-      })
+      });
       moveCursorToEndOfLine(CurrentElement);
-    } catch(mensage) {
+    } catch (mensage) {
       console.log(mensage);
       return;
     }
   }
   function HandleUpdateContent() {
-    content = String(ContainerMain.textContent)
+    content = String(ContainerMain.textContent);
   }
   function HandleEnterInEditor(event: KeyboardEvent) {
+    if (event.key === "Enter") {
+      event.preventDefault();
 
-    if(event.key === 'Enter') {
-      event.preventDefault(); 
-
-      const NewDivLine = document.createElement('div');
-      const NewSpanContent = document.createElement('span');
+      const NewDivLine = document.createElement("div");
+      const NewSpanContent = document.createElement("span");
 
       NewDivLine.appendChild(NewSpanContent);
-      NewDivLine.className = 'line';
-      NewSpanContent.className = 'contentOfLine';
-      NewSpanContent.contentEditable = 'true';
+      NewDivLine.className = "line";
+      NewSpanContent.className = "contentOfLine";
+      NewSpanContent.contentEditable = "true";
 
       NewSpanContent.addEventListener("input", HandleEditor);
       NewSpanContent.addEventListener("input", HandleUpdateContent);
       NewSpanContent.addEventListener("paste", handleClearPaste);
       NewSpanContent.addEventListener("keydown", HandleEnterInEditor);
       NewSpanContent.addEventListener("keydown", HandleDeleteElements);
-      
+
       ContainerMain.appendChild(NewDivLine);
+      NewSpanContent.focus();
     }
   }
   function HandleDeleteElements(element: KeyboardEvent) {
     const CurrentElementr = element.target as SpanElement;
     const CurrentTextContent = String(CurrentElementr.textContent);
-    const AllLines = document.querySelectorAll<HTMLDivElement>('.line');
+    const AllLines = document.querySelectorAll<HTMLDivElement>(".line");
 
-    if(element.key === 'Backspace' && CurrentTextContent === '') {
+    if (element.key === "Backspace" && CurrentTextContent.trim() === "") {
       AllLines.forEach((item) => {
-        if(item.contains(CurrentElementr)) {
+        if (item.contains(CurrentElementr)) {
           HandleRemoveEvents(CurrentElementr);
+
+          if (
+            item.previousElementSibling &&
+            "focus" in item.previousElementSibling
+          ) {
+            (
+              item.previousElementSibling.lastElementChild as SpanElement
+            ).focus();
+            moveCursorToEndOfLine(
+              item.previousElementSibling.lastElementChild as SpanElement,
+            );
+          }
+
           CurrentElementr.remove();
           item.remove();
           return;
         }
-      })
+      });
     }
   }
   function HandleRemoveEvents(target: SpanElement) {
