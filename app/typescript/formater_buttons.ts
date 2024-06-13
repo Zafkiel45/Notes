@@ -25,7 +25,7 @@ function HandleCodeBlock() {
     const NewDivLine = document.createElement('div');
 
     NewDivLine.appendChild(NewPreElement);
-    NewDivLine.className = 'line';
+    NewDivLine.className = 'line line_of_block';
     NewPreElement.className = 'code_block';
     NewPreElement.contentEditable = 'true';
     NewPreElement.textContent = '```javascript\n\n```'
@@ -33,6 +33,7 @@ function HandleCodeBlock() {
     NewPreElement.addEventListener('click', HandleAddSelection);
     NewPreElement.addEventListener('keydown', HandleNewElementCodeBlock);
     NewPreElement.addEventListener('keydown', HandleDeleteElements);
+    NewPreElement.addEventListener('paste', handleClearPaste);
 
     const TheSelectedElement = LineElements.find((item) => {
         return item.classList.contains('selection');
