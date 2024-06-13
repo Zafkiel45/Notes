@@ -4,13 +4,31 @@ const ContainerMain = document.querySelector(
 ) as HTMLDivElement;
 
 export let content: string;
+const RegexArray = [
+ /^(#{1,6})\s+(.+?)\s*$/m,
+]
+
+function HandleTitles() {
+  const nodes = document.querySelectorAll<HTMLDivElement>('.line');
+
+  console.log(nodes.length);
+  nodes.forEach((element) => {
+    const matches = RegexArray[0].test(String(element.textContent).trim());
+    console.log(element.textContent);
+    if (matches) {
+      element.classList.add("title_md");
+    } else {
+      element.classList.remove('title_md');
+    }
+  })
+}
 
 export function HandleContentInEditor() {
   const AllContentOfLine = document.querySelectorAll<HTMLDivElement>(".line");
   let NewStringContent: string = "";
 
   AllContentOfLine.forEach((item) => {
-    NewStringContent += String(item.textContent) + "\n\n";
+    NewStringContent += String(item.textContent) + "\n";
   });
 
   if (NewStringContent) {
@@ -160,7 +178,8 @@ export function HandleEditor(element: Event) {
       }
 
       CurrentElement.appendChild(NewSpan);
-    });
+      });
+    HandleTitles();
     moveCursorToEndOfLine(CurrentElement);
   } catch (mensage) {
     console.log(mensage);

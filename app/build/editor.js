@@ -1,10 +1,24 @@
 const ContainerMain = document.querySelector("#container_main");
 export let content;
+const RegexArray = [/^(#{1,6})\s+(.+?)\s*$/m];
+function HandleTitles() {
+  const nodes = document.querySelectorAll('.line');
+  console.log(nodes.length);
+  nodes.forEach(element => {
+    const matches = RegexArray[0].test(String(element.textContent).trim());
+    console.log(element.textContent);
+    if (matches) {
+      element.classList.add("title_md");
+    } else {
+      element.classList.remove('title_md');
+    }
+  });
+}
 export function HandleContentInEditor() {
   const AllContentOfLine = document.querySelectorAll(".line");
   let NewStringContent = "";
   AllContentOfLine.forEach(item => {
-    NewStringContent += String(item.textContent) + "\n\n";
+    NewStringContent += String(item.textContent) + "\n";
   });
   if (NewStringContent) {
     content = String(NewStringContent);
@@ -120,6 +134,7 @@ export function HandleEditor(element) {
       }
       CurrentElement.appendChild(NewSpan);
     });
+    HandleTitles();
     moveCursorToEndOfLine(CurrentElement);
   } catch (mensage) {
     console.log(mensage);

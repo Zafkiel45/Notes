@@ -166,6 +166,10 @@ main {
   .line_of_block {
     margin: 1rem 0rem;
   }
+  .title_md {
+    color: rgb(86, 135, 239);
+    font-size: 1.5rem;
+  }
 }
 @media (max-width: 835px) {
   .container_nav_header {
