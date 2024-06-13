@@ -162,6 +162,7 @@ main {
     font-family: "JetBrains Mono", Consolas, "Courier New", monospace;
     font-size: 14px;
     line-height: 25px;
+    overflow-x: auto;
   }
   .line_of_block {
     margin: 1rem 0rem;
@@ -169,6 +170,10 @@ main {
   .title_md {
     color: rgb(86, 135, 239);
     font-size: 1.5rem;
+  }
+  .citations_md {
+    color: rgb(68, 191, 99);
+    font-style: italic;
   }
 }
 @media (max-width: 835px) {

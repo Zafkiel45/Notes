@@ -1,10 +1,16 @@
-import { HandleSelection } from "./editor.js";
+import { HandleSelection, moveCursorToEndOfLine } from "./editor.js";
 import { isCursorAtEnd } from "./editor.js";
 import { HandleDeleteElements, HandleEnterInEditor, HandleEditor, HandleUpdateContent, handleClearPaste, HandleAddSelection } from "./editor.js";
 const code_btn = document.querySelector("#code_button");
 const italic_btn = document.querySelector("#italic_button");
-const bold_btn = document.querySelector("#bolder_button");
+const bold_btn = document.querySelector("#bold_button");
 code_btn.addEventListener('click', HandleCodeBlock);
+italic_btn.addEventListener('click', () => {
+  HandleFormating('__text__');
+});
+bold_btn.addEventListener('click', () => {
+  HandleFormating('**text**');
+});
 function HandleCodeBlock() {
   const LineElements = Array.from(document.querySelectorAll('.line'));
   const NewPreElement = document.createElement('pre');
@@ -51,5 +57,31 @@ function HandleNewElementCodeBlock(element) {
     HandleSelection();
     NewDivLine.classList.add("selection");
     NewSpanContent.focus();
+  }
+}
+function HandleFormating(formater) {
+  const SelectedElement = document.querySelector('.selection');
+  const TextContentOfSelectionElement = SelectedElement?.textContent ?? '';
+  const FirstChild = SelectedElement?.firstElementChild;
+  try {
+    if (!SelectedElement) {
+      throw new Error('O elemento não existe');
+    }
+    if (FirstChild) {
+      FirstChild.textContent = '';
+      FirstChild.textContent = TextContentOfSelectionElement + formater;
+      FirstChild.focus();
+      moveCursorToEndOfLine(FirstChild);
+    }
+  } catch (mensage) {
+    console.log(`ocorreu o seguinte erro ${mensage}`);
+    return;
+  }
+}
+export function HandleKeyFormater(element, key, formater) {
+  if (element.ctrlKey) {
+    if (element.key.toLocaleLowerCase() === key) {
+      HandleFormating(formater);
+    }
   }
 }

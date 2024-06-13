@@ -1,7 +1,7 @@
 type btn_type = HTMLButtonElement;
 type element_type = HTMLDivElement;
 
-import { HandleSelection } from "./editor.js";
+import { HandleSelection, moveCursorToEndOfLine } from "./editor.js";
 import { isCursorAtEnd } from "./editor.js";
 import { 
     HandleDeleteElements, 
@@ -14,9 +14,15 @@ import {
 
 const code_btn = document.querySelector("#code_button") as btn_type;
 const italic_btn = document.querySelector("#italic_button") as btn_type;
-const bold_btn = document.querySelector("#bolder_button") as btn_type;
+const bold_btn = document.querySelector("#bold_button") as btn_type;
 
 code_btn.addEventListener('click', HandleCodeBlock);
+italic_btn.addEventListener('click', () => {
+    HandleFormating('__text__');
+});
+bold_btn.addEventListener('click', () => {
+    HandleFormating('**text**');
+})
 
 function HandleCodeBlock() {
     const LineElements = Array.from(document.querySelectorAll<element_type>('.line'));
@@ -45,7 +51,6 @@ function HandleCodeBlock() {
     NewDivLine.classList.add('selection');
     NewPreElement.focus();
 };
-
 function HandleNewElementCodeBlock(element: KeyboardEvent) {
     const CurrentElement = element.target as HTMLPreElement;
 
@@ -78,6 +83,33 @@ function HandleNewElementCodeBlock(element: KeyboardEvent) {
         NewSpanContent.focus();
     }
 }
+function HandleFormating(formater:string) {
+    const SelectedElement = document.querySelector('.selection');
+    const TextContentOfSelectionElement = SelectedElement?.textContent ?? ''; 
+    const FirstChild = SelectedElement?.firstElementChild;
 
+    try {
+        if(!SelectedElement) {
+            throw new Error('O elemento não existe');
+        }
 
+        if(FirstChild) {
+            FirstChild.textContent = '';
+            FirstChild.textContent = TextContentOfSelectionElement + formater;
+            (FirstChild as HTMLDivElement).focus();
+            moveCursorToEndOfLine(FirstChild);
+        }
+
+    } catch(mensage) {
+        console.log(`ocorreu o seguinte erro ${mensage}`);
+        return;
+    }
+}
+export function HandleKeyFormater(element: KeyboardEvent, key: string, formater:string) {
+    if(element.ctrlKey) {
+        if(element.key.toLocaleLowerCase() === key) {
+            HandleFormating(formater);
+        }
+    }
+}
 

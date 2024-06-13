@@ -1,3 +1,5 @@
+import { HandleKeyFormater } from "./formater_buttons.js";
+
 type SpanElement = HTMLSpanElement;
 const ContainerMain = document.querySelector(
   "#container_main",
@@ -6,6 +8,7 @@ const ContainerMain = document.querySelector(
 export let content: string;
 const RegexArray = [
  /^(#{1,6})\s+(.+?)\s*$/m,
+ /^>\s+.*$/m,
 ]
 
 function HandleTitles() {
@@ -22,6 +25,20 @@ function HandleTitles() {
     }
   })
 }
+function HandleCitations() {
+  const nodes = document.querySelectorAll<HTMLDivElement>('.line');
+
+  nodes.forEach((item) => {
+    const match = RegexArray[1].test(String(item.textContent).trim());
+
+    if(match) {
+      item.classList.add('citations_md');
+    } else {
+      item.classList.remove('citations_md');
+    };
+
+  });
+};
 
 export function HandleContentInEditor() {
   const AllContentOfLine = document.querySelectorAll<HTMLDivElement>(".line");
@@ -64,7 +81,7 @@ export function HandleSelection() {
     }
   });
 }
-function moveCursorToEndOfLine(contentEditableElement: any) {
+export function moveCursorToEndOfLine(contentEditableElement: any) {
   const range = document.createRange();
   const selection = window.getSelection();
 
@@ -153,6 +170,8 @@ function HandleRemoveEvents(target: SpanElement) {
   target.removeEventListener("paste", handleClearPaste);
   target.removeEventListener("keydown", HandleEnterInEditor);
   target.removeEventListener("keydown", HandleDeleteElements);
+  target.removeEventListener("keydown", HandleCallKeyEventBold);
+  target.removeEventListener("keydown", HandleCallKeyEventItalic);
 }
 export function HandleEditor(element: Event) {
   const CurrentElement: SpanElement = element.target as HTMLSpanElement;
@@ -180,6 +199,7 @@ export function HandleEditor(element: Event) {
       CurrentElement.appendChild(NewSpan);
       });
     HandleTitles();
+    HandleCitations()
     moveCursorToEndOfLine(CurrentElement);
   } catch (mensage) {
     console.log(mensage);
@@ -211,6 +231,12 @@ export function HandleEnterInEditor(event: KeyboardEvent) {
     NewSpanContent.addEventListener("keydown", HandleEnterInEditor);
     NewSpanContent.addEventListener("keydown", HandleDeleteElements);
     NewSpanContent.addEventListener("click", HandleAddSelection);
+    NewSpanContent.addEventListener("keydown", (e) => {
+      HandleKeyFormater(e, 'i', '__text__');
+    });
+    NewSpanContent.addEventListener("keydown", (e) => {
+      HandleKeyFormater(e, 'b', '**text**');
+    });
 
     SelectedElement?.insertAdjacentElement("afterend", NewDivLine);
     HandleSelection();
@@ -233,6 +259,12 @@ export function HandleAddSelection(e: MouseEvent) {
     }
   });
 }
+function HandleCallKeyEventItalic(e: KeyboardEvent) {
+  HandleKeyFormater(e, 'i', '__text__');
+}
+function HandleCallKeyEventBold(e: KeyboardEvent) {
+  HandleKeyFormater(e, 'b', '**text**');
+}
 
 (function () {
   const ContentOfLineID = document.querySelector(
@@ -245,5 +277,7 @@ export function HandleAddSelection(e: MouseEvent) {
   ContentOfLineID.addEventListener("paste", handleClearPaste);
   ContentOfLineID.addEventListener("keydown", HandleEnterInEditor);
   ContentOfLineID.addEventListener("click", HandleAddSelection);
+  ContentOfLineID.addEventListener("keydown", HandleCallKeyEventItalic);
+  ContentOfLineID.addEventListener("keydown", HandleCallKeyEventBold);
 
 })();
