@@ -16,7 +16,3 @@ A ideia principal do projeto foi testar minhas habilidades criando algo puro, se
 
 Dito isso, tive em mente um projeto simples, que resolva um problema, e não possua 1000 e 1 possibilidades, sendo que muitas das vezes o usuário apenas utiliza meia dúzia dessas
 funcionalidades.
-
-# Futuro do Projeto:
-
-Este projeto ainda receberá algumas atualizações, pois ainda não está 100% completo. Pretedo implementar `babel`, `esbuild` e `jest`, e talvez alguma outra coisa a mais.
